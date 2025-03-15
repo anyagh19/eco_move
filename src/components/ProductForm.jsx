@@ -4,7 +4,8 @@ import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import productService from '../appwrite/Product'
 import { Input, Button, RTE, Select } from '../Index'
-import { ID } from 'appwrite'
+import { toast } from 'react-toastify'
+
 
 function ProductForm({ product }) {
     const { register, handleSubmit, watch, control, setValue, getValues } = useForm({
@@ -23,51 +24,10 @@ function ProductForm({ product }) {
     const navigate = useNavigate()
     const [file, setFile] = useState(null)
     const userData = useSelector((state) => state.auth.userData)
+    
+    
 
-    // const submit = async (data) => {
-    //     try {
-    //         if (!userData?.$id) {
-    //             console.error("User not authenticated.");
-    //             return;
-    //         }
-
-    //         let fileID = null;
-
-    //         if (file) {
-    //             const uploadedFile = await productService.uploadProductFile(file, userData.$id);
-    //             fileID = uploadedFile.$id;
-    //         }
-
-    //         if (product) {
-    //             if (fileID) {
-    //                 productService.deleteProductFile(product.productImage);
-    //             }
-
-    //             const dbProduct = await productService.updateProduct(product.$id, {
-    //                 ...data,
-    //                 productImage: fileID || product.productImage,
-    //             });
-
-    //             if (dbProduct) {
-    //                 navigate(`/product/${dbProduct.$id}`);
-    //             }
-    //         } else {
-    //             const dbProduct = await productService.createProduct({
-    //                 ...data,
-    //                 status: 'active',
-    //                 productImage: fileID,
-    //                 userID: userData.$id,
-    //             });
-
-    //             if (dbProduct) {
-    //                 navigate(`/product/${dbProduct.$id}`);
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.error('File upload error:', error);
-    //     }
-    // };
-
+    
     const resetForm = () => {
         setValue('title', '');
         setValue('description', '');
@@ -135,6 +95,7 @@ function ProductForm({ product }) {
                     console.log('Product created:', dbProduct);
                     navigate(`/product/${dbProduct.$id}`);
                     // Clear form after successful submission
+                    toast.success("Product Added Succesfully!" , {position: 'top-center'})
                     resetForm();
                 }
 
@@ -147,39 +108,14 @@ function ProductForm({ product }) {
             console.log("Submitting data:", data);
             delete data.$id;
             delete data.productID;
-            // setValue('title', '');
-            // setValue('description', '');
-            // setValue('category', '');
-            // setValue('price', '');
-            // setValue('status', 'active');
-            // setFile(null);
         }
     };
 
-    // const productIDTransform = useCallback((value) => {
-    //     if (value && typeof value === "string")
-    //         return value
-    //             .trim()
-    //             .toLowerCase()
-    //             .replace(/[^a-zA-Z\d\s]+/g, "-")
-    //             .replace(/\s/g, "-");
-
-    //     return "";
-    // }, []);
-
-    // useEffect(() => {
-    //     const subscription = watch((value, { name }) => {
-    //         if (name === "title") {
-    //             setValue("productID", productIDTransform(value.title), { shouldValidate: true });
-    //         }
-    //     });
-
-    //     return () => subscription.unsubscribe();
-    // }, [watch, productIDTransform, setValue])
-
+    
+    
     return (
         <form onSubmit={handleSubmit(submit)} className='flex w-full gap-4'>
-            <div className='w-[55%] px-4 py-7 gap-5 flex flex-col'>
+            <div className='w-[55%] px-4 py-7 gap-5 flex flex-col min-h-screen'>
                 <Input
                     label='Title:'
                     type='text'
@@ -196,18 +132,7 @@ function ProductForm({ product }) {
                     placeholder='choose category'
                     {...register("category", { required: true })}
                 />
-                {/* <Input
-                    label='Product ID'
-                    type='productID'
-                    placeholder='enetr pid'
-                    className='border  px-10 py-3 w-full'
-                    {...register('productID', {
-                        required: true
-                    })}
-                    onInput={(e) => {
-                        setValue('productID', productIDTransform(e.currentTarget.value), { shouldValidate: true })
-                    }}
-                /> */}
+                
                 <RTE
                     label='description'
                     name='description'
@@ -245,10 +170,19 @@ function ProductForm({ product }) {
                         required: true
                     })}
                 />
+                <Input 
+                label='address'
+                type='text'
+                placeholder='enter address(House No , building, Street Area - Town/Locality - City/District - State - Pincode)'
+                className='border  px-10 py-3 w-full h-[200px]'
+                {...register('address', {
+                    required: true
+                })}
+                />
                 <Select
                     options={["active", "inactive"]}
                     label="Status"
-                    className="mb-4  px-10 py-3 w-full"
+                    className="mb-4  px-10 py-3 w-full "
                     {...register("status", { required: true })}
                 />
                 <Button type="submit" disabled={isSubmitting} bgColor={product ? 'bg-red-300' : undefined} className="w-full bg-red-300">

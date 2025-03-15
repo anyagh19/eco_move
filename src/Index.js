@@ -17,6 +17,14 @@ import MyProduct from './pages/MyProduct'
 import WishList from './pages/WishList'
 import CartProducts from './pages/CartProducts'
 import EditProduct from './pages/EditProduct'
+import SellPage from './pages/SellPage'
+import DonatePage from './pages/DonatePage'
+import DonateForm from './components/DonateForm'
+import RecyclePage from './pages/RecyclePage'
+import RecycleForm from './components/RecycleForm'
+import BuyPage from './pages/BuyPage'
+import ShiftPage from './pages/ShiftPage'
+import ShiftForm from './components/ShiftForm'
 
 export{
     Header,
@@ -37,5 +45,13 @@ export{
     MyProduct,
     WishList,
     CartProducts,
-    EditProduct
+    EditProduct,
+    SellPage,
+    DonatePage,
+    DonateForm,
+    RecyclePage,
+    RecycleForm,
+    BuyPage,
+    ShiftPage,
+    ShiftForm
 }

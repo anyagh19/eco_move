@@ -9,7 +9,7 @@ import Login from './components/Login.jsx'
 import Signup from './components/Signup.jsx'
 import Account from './pages/Account.jsx'
 import Orders from './pages/Orders.jsx'
-import { CartProducts, CategoryProduct, EditProduct, MyProduct, ProductForm, WishList } from './Index.js'
+import { BuyPage, CartProducts, CategoryProduct, DonateForm, DonatePage, EditProduct, MyProduct, ProductForm, RecycleForm, RecyclePage, SellPage, ShiftForm, ShiftPage, WishList } from './Index.js'
 import AllProducts from './pages/AllProducts.jsx'
 import Home from './pages/Home.jsx'
 import {ProductPage} from './Index.js'
@@ -26,6 +26,10 @@ const router = createBrowserRouter([
       {
         path:'/',
         element: <Home />
+      },
+      {
+        path:'/buy-page',
+        element: <BuyPage />
       },
       {
         path: '/category/:category',
@@ -46,6 +50,34 @@ const router = createBrowserRouter([
       {
         path: '/edit-product/:id',
         element: <EditProduct />
+      },
+      {
+        path:'/sell-page',
+        element: <SellPage />
+      },
+      {
+        path:'/donate-page',
+        element: <DonatePage />
+      },
+      {
+        path:'/donate-form',
+        element: <DonateForm />
+      },
+      {
+        path:'/recycle-page',
+        element: <RecyclePage />
+      },
+      {
+        path:'/recycle-form',
+        element: <RecycleForm />
+      },
+      {
+        path:'/shift-page',
+        element: <ShiftPage />
+      },
+      {
+        path:'/shift-form',
+        element: <ShiftForm />
       },
       {
         path:'/user-page',

@@ -16,7 +16,7 @@ export class ProductService {
         this.bucket = new Storage(this.client)
     }
 
-    async createProduct({ title, description, category, price, productImage, productID = ID.unique(), status, userID }) {
+    async createProduct({ title, description, category, price, productImage, productID = ID.unique(), status, userID , address }) {
         try {
             if (!userID) throw new Error("User ID is required for permission handling.");
 
@@ -46,7 +46,8 @@ export class ProductService {
                     productImage,
                     status,
                     userID,
-                    productID
+                    productID,
+                    address
                 },
                 permissions,
             );
@@ -58,7 +59,7 @@ export class ProductService {
         }
     }
 
-    async updateProduct(productID, { title, description, category, price, productImage, status }) {
+    async updateProduct(productID, { title, description, category, price, productImage, status, address }) {
         try {
             return await this.databases.updateDocument(
                 conf.appwriteDatabaseID,
@@ -70,7 +71,8 @@ export class ProductService {
                     category,
                     price,
                     productImage,
-                    status
+                    status,
+                    address
                 }
             )
         } catch (error) {
@@ -109,21 +111,7 @@ export class ProductService {
         }
     }
 
-    // async listActiveProduct(queries = [Query.equal('status', 'active')]) {
-    //     try {
-    //         console.log('Fetching products with queries:', queries); // Log queries
-    //         const response = await this.databases.listDocuments(
-    //             conf.appwriteDatabaseID,
-    //             conf.appwriteProductsCollectionID,
-    //             queries
-    //         );
-    //         console.log('API Response:', response); // Log the response
-    //         return response;
-    //     } catch (error) {
-    //         console.log('Error fetching active products:', error);
-    //         throw error;
-    //     }
-    // }
+   
     async listActiveProduct(queries = [Query.equal('status', 'active')]) {
         try {
             const response = await this.databases.listDocuments(
@@ -178,29 +166,7 @@ export class ProductService {
         }
     }
 
-    // async uploadProductFile(file, userID) {
-    //     try {
-    //         if (!userID) throw new Error("User ID is required for permission handling.");
-
-    //         const permissions = [
-    //             // Permission.create(Role.user(userID)),
-    //             Permission.read(Role.any()),
-    //             // Permission.update(Role.user(userID)),
-    //             // Permission.delete(Role.user(userID)),
-    //             Permission.write(Role.user(userID)),
-    //         ];
-
-    //         return await this.bucket.createFile(
-    //             conf.appwriteBucketID,
-    //             ID.unique(),
-    //             file,
-    //             permissions
-    //         )
-    //     } catch (error) {
-    //         console.log('upload file error', error)
-    //         throw error
-    //     }
-    // }
+    
     async uploadProductFile(file, userID) {
         try {
             if (!userID) throw new Error("User ID is required for permission handling.");
@@ -240,16 +206,7 @@ export class ProductService {
         }
     }
 
-    // getProductFilePreview(fileID) {
-    //     if (!fileID) {
-    //         console.warn("Warning: fileId is missing in getProductFilePreview");
-    //         return "/default-image.png"; // Provide a placeholder image
-    //     }
-    //     return this.bucket.getFilePreview(
-    //         conf.appwriteBucketID,
-    //         fileID
-    //     )
-    // }
+   
     getProductFilePreview(fileID) {
         if (!fileID) {
             console.warn("Warning: fileId is missing in getProductFilePreview");
@@ -317,7 +274,7 @@ export class ProductService {
         }
     }
 
-    async addToCart(userID, productID, title, productImage, price , createdAt) {
+    async addToCart(userID, productID, title, productImage, price ) {
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseID,
@@ -329,7 +286,7 @@ export class ProductService {
                     title,
                     productImage,
                     price,
-                    createdAt
+                    // createdAt
                 },
                 [
                     Permission.read(Role.user(userID)),
@@ -345,11 +302,18 @@ export class ProductService {
 
     async removeCartProduct(cartID){
         try {
-            return await this.databases.deleteDocument(
+            const product = await this.databases.getDocument(
                 conf.appwriteDatabaseID,
                 conf.appwriteCartCollectionID,
                 cartID
             )
+            if(product){
+                return await this.databases.deleteDocument(
+                    conf.appwriteDatabaseID,
+                    conf.appwriteCartCollectionID,
+                    cartID
+                )
+            }
         } catch (error) {
             console.log('remove cart' , error)
         }
@@ -367,6 +331,146 @@ export class ProductService {
         } catch (error) {
             console.log('get cart', error)
             throw error
+        }
+    }
+
+    async addToOrders(userID, productID, title, productImage, price , products ,createdAt){
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteOrdersCollectionID,
+                ID.unique(),
+                {
+                    userID,
+                    productID,
+                    title,
+                    productImage,
+                    price,
+                    createdAt
+                },
+                [
+                    Permission.read(Role.user(userID)),
+                    Permission.update(Role.user(userID)),
+                    Permission.delete(Role.user(userID))
+                ]
+            )
+        } catch (error) {
+            console.log('add order', error)
+            throw error
+        }
+    }
+
+    async deleteOrder(orderID){
+        try {
+            return await this.databases.deleteDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteOrdersCollectionID,
+                orderID
+            )
+        } catch (error) {
+            console.log('delete order', error)
+        }
+    }
+
+    async getOrderedProducts(userID){
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteOrdersCollectionID,
+                [
+                    Query.equal('userID' , userID)
+                ]
+            )
+        } catch (error) {
+            console.log('get order', error)
+        }
+    }
+    
+    async addToDonate(userID , title , category , description , productImage , pickupAddress){
+        try {
+            if(!userID){
+                alert('login first')
+            }
+
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteDonateCollectionID,
+                ID.unique(),
+                {
+                    userID,
+                    title,
+                    category,
+                    description,
+                    productImage,
+                    pickupAddress
+                },
+                [
+                    Permission.read(Role.any()), // Anyone can read
+                    Permission.update(`user:${userID}`), // Fix: Correctly format user role
+                    Permission.delete(`user:${userID}`), 
+                    Permission.write(`user:${userID}`)
+                ]
+            )
+        } catch (error) {
+            console.log('add donate' , error)
+            throw error
+        }
+    }
+
+    async addToRecycle (userID , title , category, productImage , weight, pickupAddress){
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteRecycleCollectionID,
+                ID.unique(),
+                {
+                    userID,
+                    title,
+                    category,
+                    productImage,
+                    weight: Number(weight),
+                    
+                    pickupAddress
+                },
+                [
+                    Permission.read(Role.any()), // Anyone can read
+                    Permission.update(`user:${userID}`), // Fix: Correctly format user role
+                    Permission.delete(`user:${userID}`), 
+                    Permission.write(`user:${userID}`)
+                ]
+            )
+        } catch (error) {
+            console.log('add recycle ', error);
+            throw error
+        }
+    }
+
+    async addToShift(userID , userName , userPhone , userEmail , pickupAddress , dropAddress , shiftType , shiftVehicle){
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteShiftCollectionID,
+                ID.unique(),
+                {
+                    userID,
+                    userName,
+                    userPhone, 
+                    userEmail,
+                    pickupAddress,
+                    dropAddress,
+                    shiftType,
+                    shiftVehicle
+                },
+                [
+                    Permission.read(Role.any()), // Anyone can read
+                    Permission.update(`user:${userID}`), // Fix: Correctly format user role
+                    Permission.delete(`user:${userID}`), 
+                    Permission.write(`user:${userID}`)
+                ]
+            )
+        } catch (error) {
+            console.log('p add shift' , error)
+            throw error;
         }
     }
 };
