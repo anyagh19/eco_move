@@ -4,7 +4,7 @@ import productService from '../appwrite/Product';
 import { Button } from '../Index';
 import { useDispatch, useSelector } from 'react-redux';
 import { ShoppingCart } from 'lucide-react';
-import { addToCart } from '../store/CartSlice';
+//import { addToCart } from '../store/CartSlice';
 import { toast } from 'react-toastify';
 
 function ProductPage() {
@@ -72,13 +72,13 @@ function ProductPage() {
           console.log('added to cart')
           setIsAddedToCart(true)
           toast.success("Added to Cart", {position: 'top-right'})
-          dispatch(addToCart({
-            userID: userData.$id,
-            productID: id,
-            title: product.title,
-            productImage: product.productImage,
-            price: product.price
-          }));
+          // dispatch(addToCart({
+          //   userID: userData.$id,
+          //   productID: id,
+          //   title: product.title,
+          //   productImage: product.productImage,
+          //   price: product.price
+          // }));
         }
         return response;
       }

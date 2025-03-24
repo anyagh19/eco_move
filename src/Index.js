@@ -25,6 +25,19 @@ import RecycleForm from './components/RecycleForm'
 import BuyPage from './pages/BuyPage'
 import ShiftPage from './pages/ShiftPage'
 import ShiftForm from './components/ShiftForm'
+import RecycleAgencySignup from './components/RecycleAgencySignup'
+import RecycleAgencyLogin from './components/RecycleAgencyLogin'
+import ShiftingAgencyPage from './pages/ShiftingAgencyPage'
+import RecycleRequets from './pages/RecycleRequets'
+import AcceptedRecycleRequets from './pages/AcceptedRecycleRequets'
+import ShiftingAgencySignup from './components/ShiftingAgencySignup'
+import ShiftingAgencyLogin from './components/ShiftingAgencyLogin'
+import DeliveryRequetsPage from './pages/DeliveryRequetsPage'
+import DonationRequetsPage from './pages/DonationRequetsPage'
+import ShiftingRequetsPage from './pages/ShiftingRequetsPage'
+import ShiftingDonationProducts from './pages/shiftingProducts/ShiftingDonationProducts'
+import ShiftingDeliveryProducts from './pages/shiftingProducts/ShiftingDeliveryProducts'
+import ShiftingShiftProducts from './pages/shiftingProducts/ShiftingShiftProducts'
 
 export{
     Header,
@@ -53,5 +66,18 @@ export{
     RecycleForm,
     BuyPage,
     ShiftPage,
-    ShiftForm
+    ShiftForm,
+    RecycleAgencySignup,
+    RecycleAgencyLogin,
+    ShiftingAgencyPage,
+    RecycleRequets,
+    AcceptedRecycleRequets,
+    ShiftingAgencySignup,
+    ShiftingAgencyLogin,
+    DeliveryRequetsPage,
+    DonationRequetsPage,
+    ShiftingRequetsPage,
+    ShiftingDeliveryProducts,
+    ShiftingDonationProducts,
+    ShiftingShiftProducts
 }

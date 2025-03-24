@@ -7,84 +7,28 @@ import { ID } from 'appwrite'
 
 function Header() {
   const authStatus = useSelector((state) => state.auth.status)
+  const role = useSelector((state) => state.auth.role);
+  console.log("User Role:", role);
   const navigate = useNavigate()
-  const id = ID
 
-  const navItems =[
-    {
-      id: ID.unique(),
-      name: 'Home',
-      url: '/',
-      active: true
-    },
-    {
-      id: ID.unique(),
-      name: 'Buy',
-      url: '/buy-page',
-      active: true
-    },
-    {
-      id: ID.unique(),
-      name: 'Sell',
-      url: '/sell-page',
-      active: true
-    },
-    {
-      id: ID.unique(),
-      name: 'Donate',
-      url: '/donate-page',
-      active: true
-    },
-    {
-      id: ID.unique(),
-      name: 'Recycle',
-      url: '/recycle-page',
-      active: true
-    },
-    {
-      id: ID.unique(),
-      name: 'Shift',
-      url: '/shift-page',
-      active: true
-    },
-    // {
-    //   id: ID.unique(),
-    //   name: 'Furniture',
-    //   url:'/category/furniture',
-    //   active: true
-    // },
-    // {
-    //   id: ID.unique(),
-    //   name: 'Electronic',
-    //   url:'/category/electronics',
-    //   active: true
-    // },
-    {
-      id: ID.unique(),
-      name:<Input type='text' placeholder='search' className=' bg-white border border-gray-200 py-2 px-3 w-[350px] rounded-2xl ' />,
-      active:true
-    },
-    
-    {
-      id: ID.unique(),
-      name: <CircleUser />,
-      url: '/login',
-      active: !authStatus
-    },
-    {
-      id: ID.unique(),
-      name: <User />,
-      url: '/user-page',
-      active: authStatus
-    },
-    {
-      id: ID.unique(),
-      name: <ShoppingCart/>,
-      url: '/user-page/cart',
-      active: true
-    }
-    
-  ]
+  const navItems = [
+    { id: ID.unique(), name: 'Home', url: '/', active: true },
+    { id: ID.unique(), name: 'Buy', url: '/buy-page', active: role === 'user'  },
+    { id: ID.unique(), name: 'Sell', url: '/sell-page', active: role === 'user'  },
+    { id: ID.unique(), name: 'Donate', url: '/donate-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Recycle', url: '/recycle-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Shift', url: '/shift-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Requets', url: '/recycle-requets', active: role === 'recycle' },
+    { id: ID.unique(), name: 'Accepted', url: '/accepted-recycle-requets', active: role === 'recycle' },
+    { id: ID.unique(), name: 'Delivery', url: '/delivery-requets', active: role === 'shift' },
+    { id: ID.unique(), name: 'DonationDel', url: '/donation-requets', active: role === 'shift' },
+    { id: ID.unique(), name: 'Shifting', url: '/shifting-requets', active: role === 'shift' },
+    { id: ID.unique(), name: <Input type='text' placeholder='Search' className='bg-white border border-gray-200 py-2 px-3 w-[350px] rounded-2xl' />, active: role === 'user' },
+    { id: ID.unique(), name: <CircleUser />, url: '/login', active: !authStatus }, 
+    { id: ID.unique(), name: <User />, url: '/user-page', active: role === 'user'  },
+    { id: ID.unique(), name: <User />, url: '/shifting-agency-page', active:  role === 'shift' },
+    { id: ID.unique(), name: <ShoppingCart />, url: '/user-page/cart', active: role === 'user' }
+  ];
   return (
     <header>
       <Container >

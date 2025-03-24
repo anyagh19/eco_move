@@ -43,8 +43,8 @@ function ShiftForm({product}) {
     try {
       console.log('shift data', data)
       if (!userData) {
-        console.log('login', error)
-        toast.success('login to shift', { position: 'top-center' })
+        //console.log('login', error)
+        toast.error('login to shift', { position: 'top-center' })
       }
 
       if (!product) {

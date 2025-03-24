@@ -473,6 +473,23 @@ export class ProductService {
             throw error;
         }
     }
+
+    async removeAllFromCart(userID){
+        try {
+            const items =  await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteCartCollectionID,
+                [Query.equal('userID' , userID)]
+            )
+
+            await Promise.all(items.documents.map(item =>
+                this.databases.deleteDocument(conf.appwriteDatabaseID, conf.appwriteCartCollectionID, item.$id)
+            ));
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
 };
 
 

@@ -3,12 +3,13 @@ import { useDispatch, useSelector } from 'react-redux'
 import productService from '../appwrite/Product'
 import { Container, ProductCard } from '../Index'
 import { useNavigate } from 'react-router-dom'
-import { clearCart, removeFromCartAsync } from '../store/CartSlice'
+import { toast } from 'react-toastify'
+
 
 function CartProducts() {
     const [product, setProduct] = useState([])
     const userData = useSelector((state) => state.auth.userData)
-    const cartItems = useSelector((state) => state.cart.cartItems)
+   
     const navigate = useNavigate()
     const dispatch = useDispatch()
 
@@ -28,7 +29,7 @@ function CartProducts() {
                 console.log(error)
             }
         }
-        if (userData.$id) {
+        if (userData) {
             CartProducts()
         }
     }, [userData])
@@ -41,7 +42,7 @@ function CartProducts() {
                 setProduct((prev) => prev.filter((product) => product.$id !== cartID))
                 // dispatch(removeFromCart(cartID));
 
-                dispatch(removeFromCart()); 
+                //dispatch(removeFromCart()); 
             }
             return response;
         } catch (error) {
@@ -55,37 +56,23 @@ function CartProducts() {
 
     const placeOrder = async () => {
         try {
-            // const products = cartItems.map((item) =>( {
-            //     $id:item.$id,
-            //     title:item.title,
-            //     productImage:item.productImage,
-            //     price:parseFloat(item.price),
-            // }))
-            // const response = await productService.addToOrders(
-            //     userData.$id,
-            //     new Date().toISOString()
-            // )
-            // if(response){
-            //     console.log('response', response)
-            //     return response;
-            // }
-            if (cartItems.length === 0) {
-                console.log("Cart is empty, cannot place order");
-                return;
-            }
-    
-            // Loop through each cart item and add as an order
-            for (const item of cartItems) {
+            
+            
+            await Promise.all(product.map(async (item) => {
                 await productService.addToOrders(
-                    userData.$id,
-                    item.productID,  // Product ID
-                    item.title,
+                    userData.$id,     // User ID
+                    item.$id,         // Product ID
+                    item.title,       // Product Title
                     item.productImage,
                     parseFloat(item.price),
                     new Date().toISOString()
                 );
-            }
-            dispatch(clearCart())
+            }));
+            
+            await productService.removeAllFromCart(userData.$id)
+
+            setProduct([])
+            toast.success('Thanks for Buying' , {position: 'top-center'})
         } catch (error) {
             console.log(error)
         }

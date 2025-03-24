@@ -1,4 +1,4 @@
-import {Client ,Account , ID} from 'appwrite'
+import { Client, Account, ID } from 'appwrite'
 import conf from '../conf/Conf'
 
 export class AuthService {
@@ -13,18 +13,17 @@ export class AuthService {
         this.account = new Account(this.client)
     }
 
-    async createAccount({email , password , name, phoneNumber}) {
+    async createAccount({ email, password, name, phoneNumber }) {
         try {
-            const userAcount = await this.account.create(ID.unique() , email , password , name);
+            const userAcount = await this.account.create(ID.unique(), email, password, name);
             if (userAcount) {
-                await this.login({email , password})
+                await this.login({ email, password })
                 await this.account.updatePrefs({
                     phoneNumber: phoneNumber,
-                    // role: role
                 });
                 return userAcount;
             }
-            else{
+            else {
                 return userAcount;
             }
         } catch (error) {
@@ -32,25 +31,48 @@ export class AuthService {
         }
     }
 
-    async login({email , password}){
+    async login({ email, password }) {
         try {
-            return await this.account.createEmailPasswordSession(email , password);
-        } catch (error) {
-          throw error  
-        }
-    }
-
-    async getCurrentUser () {
-        try {
-            return await this.account.get()
+            const session = await this.account.createEmailPasswordSession(email, password);
+            if (!session) throw new Error("Login failed. No session created.");
+            console.log("Login successful:", session);
+            return session;
+            
         } catch (error) {
             throw error
         }
     }
 
-    async logOut(){
+    async getCurrentUser() {
         try {
-            return await this.account.deleteSession('current')
+            const sessions = await this.account.listSessions();
+            if (!sessions.sessions.length) {
+                console.warn("No active session found. Redirecting to login.");
+                return null;
+            }
+            return await this.account.get();
+        } catch (error) {
+            console.log(error)
+            return null;
+        }
+    }
+
+    async logOut() {
+        try {
+            const sessions = await this.account.listSessions(); // List active sessions
+            if (!sessions.sessions.length) {
+                console.warn("No active session found. Skipping logout.");
+                return false;
+            }
+
+            await this.account.deleteSession("current");
+
+            localStorage.removeItem("status");
+            localStorage.removeItem("userData");
+            localStorage.removeItem("role");
+
+            console.log("Logout successful!");
+            return true;
         } catch (error) {
             throw error
         }

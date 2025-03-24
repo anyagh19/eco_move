@@ -10,6 +10,12 @@ const conf = {
     appwriteDonateCollectionID: String(import.meta.env.VITE_APPWRITE_DONATE_COLLECTION_ID),
     appwriteRecycleCollectionID: String(import.meta.env.VITE_APPWRITE_RECYCLE_COLLECTION_ID),
     appwriteShiftCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFT_COLLECTION_ID),
+    appwriteRecycleAgencyCollectionID: String(import.meta.env.VITE_APPWRITE_RECYCLEAGENCY_COLLECTION_ID),
+    appwriteRecycleAgencyProductsCollectionID: String(import.meta.env.VITE_APPWRITE_RECYCLEAGENCYPRODUCTS_COLLECTION_ID),
+    appwriteShiftingAgencyCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCY_COLLECTION_ID),
+    appwriteShiftingAgencyDonationProductsCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCYDONATIONPRODUCTS_COLLECTION_ID),
+    appwriteShiftingAgencyDeliveryProductsCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCYDELIVERYPRODUCTS_COLLECTION_ID),
+    appwriteShiftingAgencyShiftProductsCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCYSHIFTPRODUCTS_COLLECTION_ID),
     appwriteBucketID: String(import.meta.env.VITE_APPWRITE_BUCKET_ID)
 }
 

@@ -13,38 +13,32 @@ function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    authService.getCurrentUser()
-      .then((userData) => {
-        if (userData) {
-          dispatch(login({ userData }))
+    const fetchUser = async () => {
+        try {
+            const user = await authService.getCurrentUser();
+            if (user) {
+                const role = localStorage.getItem("role") || "user";
+                dispatch(login({ userData: user, role }));
+            } else {
+                dispatch(logout());
+            }
+        } catch (error) {
+            console.error("Session fetch error:", error);
+        } finally {
+            setLoading(false);
         }
-        else {
-          dispatch(logout())
-        }
-      })
-      .finally(() => setLoading(false))
-  }, [])
+    };
+
+    fetchUser();
+}, [dispatch]);
+
 
   // window.localStorage.clear()
   return !loading ?
     <div className='w-full min-h-screen '>
       <ToastContainer position="top-center" autoClose={3000} />
       <Header />
-      {/* <div className='w-full flex items-center justify-between py-2 px-6'>
-        <Link to='/'>
-          <h3 className='font-semibold text-gray-600 hover:text-gray-800 text-lg'>Buy</h3>
-        </Link>
-        <Link to='/sell-page'>
-          <h3 className='font-semibold text-gray-600 hover:text-gray-800 text-lg'>Sell</h3>
-        </Link>
-        <Link to='/donate-page'>
-          <h3 className='font-semibold text-gray-600 hover:text-gray-800 text-lg'>Donate</h3>
-        </Link>
-        <Link to='/recycle-page'>
-        <h3 className='font-semibold text-gray-600 hover:text-gray-800 text-lg'>Recycle</h3>
-        </Link>
-        <h3 className='font-semibold text-gray-600 hover:text-gray-800 text-lg'>Shift</h3>
-      </div> */}
+      
       <Outlet />
       <Footer />
     </div>
