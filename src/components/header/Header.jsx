@@ -13,11 +13,11 @@ function Header() {
 
   const navItems = [
     { id: ID.unique(), name: 'Home', url: '/', active: true },
-    { id: ID.unique(), name: 'Buy', url: '/buy-page', active: role === 'user'  },
-    { id: ID.unique(), name: 'Sell', url: '/sell-page', active: role === 'user'  },
-    { id: ID.unique(), name: 'Donate', url: '/donate-page', active: role === 'user' },
-    { id: ID.unique(), name: 'Recycle', url: '/recycle-page', active: role === 'user' },
     { id: ID.unique(), name: 'Shift', url: '/shift-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Sell', url: '/sell-page', active: role === 'user'  },
+    { id: ID.unique(), name: 'Recycle', url: '/recycle-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Donate', url: '/donate-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Buy', url: '/buy-page', active: role === 'user'  },
     { id: ID.unique(), name: 'Requets', url: '/recycle-requets', active: role === 'recycle' },
     { id: ID.unique(), name: 'Accepted', url: '/accepted-recycle-requets', active: role === 'recycle' },
     { id: ID.unique(), name: 'Delivery', url: '/delivery-requets', active: role === 'shift' },
@@ -30,10 +30,10 @@ function Header() {
     { id: ID.unique(), name: <ShoppingCart />, url: '/user-page/cart', active: role === 'user' }
   ];
   return (
-    <header>
+    <header className='bg-gray-900 shadow-lg'>
       <Container >
-        <nav className='flex justify-between items-center py-3 px-8 bg-white shadow-md'>
-          <div className='w-[15%]'>
+        <nav className='flex justify-between items-center py-3 px-8'>
+          <div className='w-[15%] cursor-pointer' onClick={() => navigate("/")}>
             <Logo />
           </div>
           
@@ -43,6 +43,9 @@ function Header() {
               <li key={item.id} className='text-lg font-semibold text-gray-500 hover:text-gray-700 '> 
                 <button
                 onClick={() => navigate(item.url)}
+                className={`text-lg font-semibold text-gray-300 hover:text-green-400 transition duration-300 ${
+                      location.pathname === item.url ? "border-b-2 border-green-400" : ""
+                    }`}
                 >{item.name}</button>
               </li>
             : null

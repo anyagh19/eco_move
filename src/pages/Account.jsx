@@ -10,7 +10,7 @@ function Account() {
     const userData = useSelector((state) => state.auth.userData)
     const location = useLocation()
     return (
-        <div className='flex gap-4'>
+        <div className='flex gap-4 bg-gray-50'>
             <div className='w-[19%] px-10 py-10 flex flex-col items-start  gap-7 min-h-[88vh] shadow-lg hover:shadow-xl   '>
 
                 <Link to='order' className='flex items-center'>

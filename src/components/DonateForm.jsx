@@ -1,152 +1,141 @@
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import productService from '../appwrite/Product'
-import Input from './Input'
-import Select from './Select'
-import { RTE, Button } from '../Index'
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-//toast.configure();
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import productService from "../appwrite/Product";
+import Input from "./Input";
+import Select from "./Select";
+import { RTE, Button } from "../Index";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function DonateForm({ product }) {
     const { register, handleSubmit, control, getValues, setValue } = useForm({
         defaultValues: {
-            title: '',
-            category: '',
-            description: '',
-            productImage: '',
-            pickupAddress: '',
-        }
-    })
+            title: "",
+            category: "",
+            description: "",
+            productImage: "",
+            pickupAddress: "",
+        },
+    });
 
-    const [isSubmitting, setIsSubmitting] = useState(false)
-    const [file, setFile] = useState(null)
-    const navigate = useNavigate()
-    const userData = useSelector((state) => state.auth.userData)
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [file, setFile] = useState(null);
+    const navigate = useNavigate();
+    const userData = useSelector((state) => state.auth.userData);
 
     const resetForm = () => {
-        setValue('title', '')
-        setValue('category', '')
-        setValue('description', '')
-        setFile(null)
-        setValue('pickupAddress', '')
-    }
+        setValue("title", "");
+        setValue("category", "");
+        setValue("description", "");
+        setFile(null);
+        setValue("pickupAddress", "");
+    };
 
     const submit = async (data) => {
-        if (isSubmitting)
-            return true;
-        setIsSubmitting(true)
+        if (isSubmitting) return;
+        setIsSubmitting(true);
 
         try {
-            console.log('foem data', data);
-            if (!userData.$id) {
-                console.log('user not verify')
-                alert('login')
+            if (!userData?.$id) {
+                toast.error("You need to log in first!", { position: "top-center" });
                 return;
             }
 
-            let fileID = null
+            let fileID = null;
             if (file) {
-                console.log('uploading file');
-                const uploadedFile = await productService.uploadProductFile(file, userData.$id)
-                fileID = uploadedFile.$id
-                console.log('file id', fileID)
+                const uploadedFile = await productService.uploadProductFile(file, userData.$id);
+                fileID = uploadedFile.$id;
             }
 
             if (!product) {
-                console.log('donating product');
                 const dbProduct = await productService.addToDonate(
-                    userData.$id, // Pass user ID correctly
+                    userData.$id,
                     data.title,
                     data.category,
                     data.description,
                     fileID,
                     data.pickupAddress
-                )
+                );
 
                 if (dbProduct) {
-                    console.log('Product donated:', dbProduct);
-                    navigate(`/donate-page`);
                     toast.success("🎉 Thanks for your donation!", { position: "top-center" });
-                    resetForm()
+                    navigate(`/donate-page`);
+                    resetForm();
                 }
             }
-
         } catch (error) {
-            console.log('donate submit ', error);
+            console.error("Donation error:", error);
+            toast.error("Failed to donate. Try again.");
+        } finally {
+            setIsSubmitting(false);
         }
-        finally {
-            setIsSubmitting(false)
-            console.log('submitting', data);
-            //alert('Thanks for ur Donation')
-        }
-    }
+    };
+
     return (
-        <form onSubmit={handleSubmit(submit)} className='w-full min-h-screen flex gap-5 py-5 px-7'>
-            <div className='flex flex-col gap-6 w-[50%]'>
+        <form onSubmit={handleSubmit(submit)} className="w-full min-h-screen flex flex-col md:flex-row gap-6 p-8 bg-gray-50 rounded-lg shadow-md">
+            {/* Left Section */}
+            <div className="flex flex-col gap-6 w-full md:w-1/2">
                 <Input
-                    label='Title:'
-                    type='text'
-                    placeholder='enter title'
-                    className='w-full border py-3 px-5 opacity-15 hover:opacity-50'
-                    {...register('title', {
-                        required: true
-                    })}
+                    label="Title:"
+                    type="text"
+                    placeholder="Enter title"
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-900 p-3"
+                    {...register("title", { required: true })}
                 />
                 <Select
-                    label='Category'
-                    options={['furniture', 'electronics', 'others']}
-                    className='w-full border py-3 px-5  hover:opacity-50'
-                    {...register('category', {
-                        required: true
-                    })}
+                    label="Category"
+                    options={["Furniture", "Electronics", "Others"]}
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-900 p-3"
+                    {...register("category", { required: true })}
                 />
                 <RTE
-                    label='description'
-                    name='description'
-                    className='border-2'
+                    label="Description"
+                    name="description"
+                    className="border-gray-300 rounded-lg shadow-sm p-3"
                     control={control}
-                    defaultValue={getValues('description')}
+                    defaultValue={getValues("description")}
                 />
             </div>
-            <div className='w-[50%] flex flex-col gap-6'>
+
+            {/* Right Section */}
+            <div className="w-full md:w-1/2 flex flex-col gap-6">
                 <Input
-                    label="Product Image :"
+                    label="Product Image:"
                     type="file"
-                    className="mb-4  px-10 py-3 w-full"
+                    className="border-gray-300 rounded-lg shadow-sm p-3"
                     onChange={(e) => setFile(e.target.files[0])}
                     accept="image/png, image/jpg, image/jpeg, image/gif"
-                // {...register("image", { required: !product })}
                 />
                 {product?.productImage ? (
-                    <div className="w-full mb-4">
+                    <div className="w-full">
                         <img
                             src={productService.getProductFilePreview(product.productImage)}
                             alt={product.title}
-                            className="rounded-lg"
+                            className="rounded-lg shadow-md"
                         />
                     </div>
                 ) : (
                     <p className="text-gray-500">No preview available</p>
                 )}
                 <Input
-                    label='address'
-                    type='text'
-                    placeholder='enter address(House No , building, Street Area - Town/Locality - City/District - State - Pincode)'
-                    className='border  px-10 py-3 w-full h-[200px]'
-                    {...register('pickupAddress', {
-                        required: true
-                    })}
+                    label="Pickup Address"
+                    type="text"
+                    placeholder="Enter full address (House No, Building, Street, City, State, Pincode)"
+                    className="border-gray-300 rounded-lg shadow-sm p-3 h-[150px]"
+                    {...register("pickupAddress", { required: true })}
                 />
-                <Button type="submit" disabled={isSubmitting} bgColor={product ? 'bg-red-300' : undefined} className="w-full bg-red-300">
-                    Donate
+                <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-700 transition"
+                >
+                    {isSubmitting ? "Donating..." : "Donate Now"}
                 </Button>
             </div>
         </form>
-    )
+    );
 }
 
-export default DonateForm
+export default DonateForm;

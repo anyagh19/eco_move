@@ -1,4 +1,4 @@
-import React, {useState , useEffect} from 'react'
+import React, { useEffect, useState } from 'react'
 import shiftAuthService from '../appwrite/ShiftAuthService'
 import { Link } from 'react-router-dom'
 
@@ -25,8 +25,6 @@ function ShiftingRequetsPage() {
         console.log('Fetch completed');
         setLoading(false);
       });
-
-
   }, [])
 
   const acceptedShiftingRequets = async (product) => {
@@ -52,64 +50,63 @@ function ShiftingRequetsPage() {
       }
 
       await shiftAuthService.acceptedShiftProducts({
-
         productID: product.$id,
         agencyID,
         pickupAddress: product.pickupAddress,
         dropAddress: product.dropAddress,
         shiftType: product.shiftType,
         shiftVehicle: product.shiftVehicle,
-        userPhone : product.userPhone
-      }
-      )
+        userPhone: product.userPhone
+      })
 
       await shiftAuthService.deleteShiftProduct(product.$id);
       setShiftProducts((prev) => prev.filter((p) => p.$id !== product.$id));
 
       console.log("Product accepted and removed from UI.");
-
     } catch (error) {
       console.log(error)
     }
   }
 
-  if (loading) {
-    return <div>Loading products...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (shiftProducts.length === 0) {
-    return <div>No products available</div>;
-  }
   return (
-    <div className="w-full py-6">
-    <div className="flex flex-wrap gap-8">
-      {shiftProducts.map((product) => (
-        <div key={product.$id} className="gap-10 p-3">
-          <div className='w-[250px] p-3 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg'>
-            <Link to={`/${product.$id}`}>
-              <div className="flex">
-                {/* <img
+    <div className="w-full py-6 bg-gray-50 flex flex-col items-center min-h-[80vh]">
+      {loading ? (
+        <div className="text-center text-lg font-medium">Loading products...</div>
+      ) : error ? (
+        <div className="text-center text-red-500 text-lg font-medium">Error: {error}</div>
+      ) : shiftProducts.length === 0 ? (
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <h3 className="text-center text-gray-500 text-2xl font-semibold">No products available</h3>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 px-4">
+          {shiftProducts.map((product) => (
+            <div key={product.$id} className="p-4 shadow-lg rounded-lg bg-white hover:shadow-xl transition-transform transform hover:scale-105 w-full max-w-sm">
+              <Link to={`/${product.$id}`}>
+                <div className="flex justify-center">
+                  {/* <img
                   src={shiftAuthService.getProductFilePreview(product.productImage)}
                   alt={product.title}
-                  className="rounded-xl object-fill object-center h-[300px] w-full"
+                  className="rounded-xl object-cover h-[250px] w-full max-w-[300px]"
                 /> */}
-              </div>
-              <h2 className='font-medium text-xl'>{product.pickupAddress}</h2>
-              <h1 className='font-semibold text-lg'>Category: {product.dropAddress}</h1>
-              <h2 className='font-medium text-xl'>Weight: {product.userPhone}</h2>
-              <h2 className='font-medium text-xl'>Address: {product.shiftType}</h2>
-              <h2 className='font-medium text-xl'>Address: {product.shiftVehicle}</h2>
-            </Link>
-            <button onClick={() => acceptedShiftingRequets(product)} className='bg-red-300 px-5 py-3 rounded-xl hover:bg-red-500 text-lg font-medium'>accept</button>
-          </div>
+                </div>
+                <h2 className='font-semibold text-xl mt-3 text-gray-800'>Pickup Address:</h2>
+                <h2 className='text-gray-700 break-words'>{product.pickupAddress}</h2>
+                <h2 className='font-semibold text-xl mt-3 text-gray-800'>Drop Address:</h2>
+                <h2 className='text-gray-700 break-words'>{product.dropAddress}</h2>
+                <h2 className='font-semibold text-xl mt-3 text-gray-800'>Shift Type:</h2>
+                <h2 className='text-gray-700 break-words'>{product.shiftType}</h2>
+                <h2 className='font-semibold text-xl mt-3 text-gray-800'>Vehicle:</h2>
+                <h2 className='text-gray-700'>{product.shiftVehicle}</h2>
+                <h2 className='font-semibold text-xl mt-3 text-gray-800'>Phone:</h2>
+                <h2 className='text-gray-700'>{product.userPhone}</h2>
+              </Link>
+              <button onClick={() => acceptedShiftingRequets(product)} className='w-full mt-3 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 text-lg font-medium transition duration-300 ease-in-out'>Accept</button>
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
-  </div>
   )
 }
 

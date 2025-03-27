@@ -174,6 +174,18 @@ export class RecycleAuthService {
             productID);
     }
     
+    async deleteAcceptedRecycleProduct(recycleProductID){
+        try {
+            return await this.databases.deleteDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteRecycleAgencyProductsCollectionID,
+                recycleProductID
+            )
+        } catch (error) {
+            console.log('delete re pro', error)
+            throw error;
+        }
+    }
 }
 
 const recycleAuthService = new RecycleAuthService();

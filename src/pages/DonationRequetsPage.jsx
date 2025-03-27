@@ -25,8 +25,6 @@ function DonationRequetsPage() {
         console.log('Fetch completed');
         setLoading(false);
       });
-
-
   }, [])
 
   const acceptedDonationRequets = async (product) => {
@@ -52,7 +50,6 @@ function DonationRequetsPage() {
       }
 
       await shiftAuthService.acceptedDonationProducts({
-
         productID: product.$id,
         agencyID,
         title: product.title,
@@ -60,8 +57,7 @@ function DonationRequetsPage() {
         description: product.description,
         productImage: product.productImage,
         pickupAddress: product.pickupAddress,
-      }
-      )
+      })
 
       await shiftAuthService.deleteDonationProduct(product.$id);
       setDonationProducts((prev) => prev.filter((p) => p.$id !== product.$id));
@@ -73,41 +69,36 @@ function DonationRequetsPage() {
     }
   }
 
-  if (loading) {
-    return <div>Loading products...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (donationProducts.length === 0) {
-    return <div>No products available</div>;
-  }
   return (
-    <div className="w-full py-6">
-      <div className="flex flex-wrap gap-8">
-        {donationProducts.map((product) => (
-          <div key={product.$id} className="gap-10 p-3">
-            <div className='w-[250px] p-3 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg'>
-              <Link to={`/${product.$id}`}>
-                <div className="flex">
-                  <img
-                    src={shiftAuthService.getProductFilePreview(product.productImage)}
-                    alt={product.title}
-                    className="rounded-xl object-fill object-center h-[300px] w-full"
-                  />
-                </div>
-                <h2 className='font-medium text-xl'>{product.title}</h2>
-                <h1 className='font-semibold text-lg'>Category: {product.category}</h1>
-                <h2 className='font-medium text-xl'>Weight: {product.description}</h2>
-                <h2 className='font-medium text-xl'>Address: {product.pickupAddress}</h2>
-              </Link>
-              <button onClick={() => acceptedDonationRequets(product)} className='bg-red-300 px-5 py-3 rounded-xl hover:bg-red-500 text-lg font-medium'>accept</button>
+    <div className="w-full py-6 bg-gray-50 flex flex-col items-center min-h-[80vh]">
+      {loading ? (
+        <div className="text-center text-lg font-medium">Loading products...</div>
+      ) : error ? (
+        <div className="text-center text-red-500 text-lg font-medium">Error: {error}</div>
+      ) : donationProducts.length === 0 ? (
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <h3 className="text-center text-gray-500 text-2xl font-semibold">No products available</h3>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {donationProducts.map((product) => (
+            <div key={product.$id} className="p-4 shadow-lg rounded-lg bg-white hover:shadow-xl transition-transform transform hover:scale-105 w-full max-w-sm">
+              <div className="flex justify-center">
+                <img
+                  src={shiftAuthService.getProductFilePreview(product.productImage)}
+                  alt={product.title}
+                  className="rounded-xl object-cover w-[300px]"
+                />
+              </div>
+              <h2 className='font-semibold text-xl mt-3'>{product.title}</h2>
+              <div className='flex gap-2'><h1 className='font-medium text-lg'>Category:</h1><h2>{product.category}</h2></div>
+              <div className='flex gap-2'><h1 className='font-medium text-lg'>Description:</h1><h2>{product.description}</h2></div>
+              <div className='flex gap-2'><h1 className='font-medium text-lg'>Address:</h1><h2>{product.pickupAddress}</h2></div>
+              <button onClick={() => acceptedDonationRequets(product)} className='w-full mt-3 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 text-lg font-medium transition'>Accept</button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

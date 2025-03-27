@@ -1,9 +1,14 @@
-import React from 'react'
+import React from "react";
 
-function Logo({width = '70px'}) {
+function Logo({ width = "100px" }) {
   return (
-    <div className='text-2xl font-bold'>EcoMove</div>
-  )
+    <div
+      className="text-3xl font-extrabold bg-gradient-to-r from-green-400 to-green-600 text-transparent bg-clip-text cursor-pointer"
+      style={{ width }}
+    >
+      EcoMove
+    </div>
+  );
 }
 
-export default Logo
+export default Logo;

@@ -1,15 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import productService from '../appwrite/Product'
-import { Input , Button , Select } from '../Index'
+import { Input, Button, Select } from '../Index'
 
-function ShiftForm({product}) {
+function ShiftForm({ product }) {
   const { register, handleSubmit, setValue } = useForm({
-    defaultValue: {
+    defaultValues: {
       userName: '',
       userPhone: '',
       userEmail: '',
@@ -21,7 +20,6 @@ function ShiftForm({product}) {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  //const [file, setFile] = useState(null)
   const userData = useSelector((state) => state.auth.userData)
   const navigate = useNavigate()
 
@@ -31,119 +29,102 @@ function ShiftForm({product}) {
     setValue('userEmail', '')
     setValue('pickupAddress', '')
     setValue('dropAddress', '')
-    setValue('shiftValue', '')
+    setValue('shiftType', '')
     setValue('shiftVehicle', '')
   }
 
   const submit = async (data) => {
-    if (isSubmitting)
-      return;
+    if (isSubmitting) return;
     setIsSubmitting(true)
 
     try {
-      console.log('shift data', data)
       if (!userData) {
-        //console.log('login', error)
-        toast.error('login to shift', { position: 'top-center' })
+        toast.error('Login to proceed with shifting', { position: 'top-center' })
+        return;
       }
 
-      if (!product) {
-        const dbProduct = await productService.addToShift(
-          userData.$id,
-          data.userName,
-          data.userPhone.toString(),
-          data.userEmail,
-          data.pickupAddress,
-          data.dropAddress,
-          data.shiftType,
-          data.shiftVehicle
-        )
+      const dbProduct = await productService.addToShift(
+        userData.$id,
+        data.userName,
+        data.userPhone.toString(),
+        data.userEmail,
+        data.pickupAddress,
+        data.dropAddress,
+        data.shiftType,
+        data.shiftVehicle
+      )
 
-        if (dbProduct) {
-          console.log('shift product', dbProduct);
-          navigate(`/shift-page`);
-          toast.success("🎉 Thanks for shifting request!", { position: "top-center" });
-          resetForm()
-        }
+      if (dbProduct) {
+        toast.success("🎉 Thanks for your shifting request!", { position: "top-center" });
+        navigate(`/shift-page`);
+        resetForm()
       }
     } catch (error) {
-      console.log('f shift', error)
-      throw error;
+      console.error('Shift submission failed:', error)
+      toast.error("Failed to process shift request. Try again.", { position: "top-center" });
+    } finally {
+      setIsSubmitting(false);
     }
   }
+
   return (
-    <form onSubmit={handleSubmit(submit)} className='w-full min-h-screen flex gap-5 py-5 px-7'>
-      <div className='flex flex-col gap-6 w-[50%]'>
+    <form onSubmit={handleSubmit(submit)} className='w-full min-h-screen flex flex-col md:flex-row gap-6 p-8 bg-gray-50 rounded-lg shadow-md'>
+      <div className='flex flex-col gap-6 w-full md:w-1/2'>
         <Input
           label='Name'
           type='text'
-          placeholder='enter Name'
-          className='w-full border py-3 px-5  '
-          {...register('userName', {
-            required: true
-          })}
+          placeholder='Enter Name'
+          className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+          {...register('userName', { required: true })}
         />
         <Input
           label='Phone'
           type='text'
-          placeholder='enter Phone'
-          className='w-full border py-3 px-5  '
-          {...register('userPhone', {
-            required: true
-          })}
+          placeholder='Enter Phone'
+          className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+          {...register('userPhone', { required: true })}
         />
         <Input
           label='E-mail'
           type='email'
-          placeholder='enter Email'
-          className='w-full border py-3 px-5  '
-          {...register('userEmail', {
-            required: true
-          })}
+          placeholder='Enter Email'
+          className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+          {...register('userEmail', { required: true })}
         />
-
         <Select
           label='Shift Type'
-          options={['household', 'office', 'furniture', 'appliannce']}
-          className='w-full border py-3 px-5  '
-          {...register('shiftType', {
-            required: true
-          })}
+          options={['Household', 'Office', 'Furniture', 'Appliance']}
+          className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+          {...register('shiftType', { required: true })}
         />
       </div>
-      <div className='w-[50%] flex flex-col gap-6'>
+      <div className='w-full md:w-1/2 flex flex-col gap-6'>
         <Select
           label='Shift Vehicle'
-          options={['miniTruck', 'tempo', 'lorry']}
-          className='w-full border py-3 px-5  '
-          {...register('shiftVehicle', {
-            required: true
-          })}
+          options={['Mini Truck', 'Tempo', 'Lorry']}
+          className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+          {...register('shiftVehicle', { required: true })}
         />
         <Input
-          label='pick Address'
+          label='Pickup Address'
           type='text'
-          placeholder='enter address(House No , building, Street Area - Town/Locality - City/District - State - Pincode)'
-          className='border  px-10 py-3 w-full h-[200px]'
-          {...register('pickupAddress', {
-            required: true
-          })}
+          placeholder='Enter full address (House No, Street, City, State, Pincode)'
+          className='border-gray-300 rounded-lg shadow-sm p-3 h-[150px]'
+          {...register('pickupAddress', { required: true })}
         />
         <Input
-          label='drop address'
+          label='Drop Address'
           type='text'
-          placeholder='enter address(House No , building, Street Area - Town/Locality - City/District - State - Pincode)'
-          className='border  px-10 py-3 w-full h-[200px]'
-          {...register('dropAddress', {
-            required: true
-          })}
+          placeholder='Enter full address (House No, Street, City, State, Pincode)'
+          className='border-gray-300 rounded-lg shadow-sm p-3 h-[150px]'
+          {...register('dropAddress', { required: true })}
         />
-        <Button type="submit" disabled={isSubmitting} bgColor={product ? 'bg-green-300' : undefined} className="w-full bg-green-300">
-          Shift
+        <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-700 transition">
+          {isSubmitting ? "Processing..." : "Shift Now"}
         </Button>
       </div>
     </form>
   )
 }
 
-export default ShiftForm
+export default ShiftForm;

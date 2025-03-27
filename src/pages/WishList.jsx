@@ -1,72 +1,65 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux'
 import productService from '../appwrite/Product'
-import { Container , ProductCard } from '../Index'
-
+import { Container, ProductCard } from '../Index'
+import { toast } from 'react-toastify'
 
 function WishList() {
-  const [product, setProduct] = useState([])
+  const [products, setProducts] = useState([])
   const userData = useSelector((state) => state.auth.userData)
 
   useEffect(() => {
-    async function WishlistProducts() {
+    const fetchWishlistProducts = async () => {
       try {
-        const response = await productService.getWishlistProducts(userData.$id)
-        if (response?.documents && response.documents.length > 0) {
-          setProduct(response.documents)
-        }
-        else {
-          setProduct([])
-        }
-      } 
-      catch (error) {
-        console.log(error)
+        const response = await productService.getWishlistProducts(userData?.$id)
+        setProducts(response?.documents || [])
+      } catch (error) {
+        console.error('Error fetching wishlist products:', error)
       }
-    
     }
-    if (userData.$id) {
-      WishlistProducts()
-    }
-  }, [userData.$id])
 
-  const removeWish = async (wishlistID) => {
+    if (userData?.$id) {
+      fetchWishlistProducts()
+    }
+  }, [userData?.$id])
+
+  const removeFromWishlist = async (wishlistID) => {
     try {
       const response = await productService.deleteWishlistProduct(wishlistID)
-      if(response){
-        console.log('removed')
-        setProduct((prevProducts) =>
-          prevProducts.filter((product) => product.$id !== wishlistID)
-        );
+      if (response) {
+        setProducts((prev) => prev.filter((product) => product.$id !== wishlistID))
+        toast.info('Removed from wishlist', { position: 'top-center' })
       }
-      return response;
     } catch (error) {
-      console.log(error)
+      console.error('Error removing from wishlist:', error)
     }
   }
 
   return (
-    <div className='w-full'>
+    <div className="w-full bg-gray-50">
       <Container>
-        {
-          product.length == 0 ? (
-            <h3 className="text-center text-gray-500">No products found for Wishlist.</h3>
-          ) : (
-            <div className='flex flex-wrap gap-5'>
-              {product.map((product) => (
-                <div key={product.$id} className=' flex items-center flex-col p-2'>
-                  
-                  <ProductCard
-                    $id={product.$id}
-                    title={product.title}
-                    price={product.price}
-                    productImage={product.productImage}
-                  />
-                  <button className='py-2 px-3 rounded-lg bg-red-300 hover:bg-red-500' onClick={() => removeWish(product.$id)}>Remove from wishlist</button>
-                </div>
-              ))}
-            </div>
-          )
-        }
+        {products.length === 0 ? (
+          <h3 className="text-center text-gray-500 text-lg">No products found in Wishlist.</h3>
+        ) : (
+          <div className="flex flex-wrap gap-6">
+            {products.map((product) => (
+              <div key={product.$id} className="flex flex-col items-center p-2">
+                <ProductCard
+                  $id={product.$id}
+                  title={product.title}
+                  price={product.price}
+                  productImage={product.productImage}
+                />
+                <button
+                  className="mt-2 py-2 px-4 rounded-lg bg-red-400 text-white hover:bg-red-500 transition"
+                  onClick={() => removeFromWishlist(product.$id)}
+                >
+                  Remove from Wishlist
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </Container>
     </div>
   )

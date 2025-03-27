@@ -29,7 +29,7 @@ function AllProducts() {
     
 
     return (
-        <div className='w-full '>
+        <div className='w-full bg-gray-50'>
             <Container >
             <div className="">
 

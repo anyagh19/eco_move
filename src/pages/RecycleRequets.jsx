@@ -1,115 +1,113 @@
-import React, { useEffect, useState } from 'react';
-import recycleAuthService from '../appwrite/RecycleAuth';
-import { Link } from 'react-router-dom';
-import { Button } from '../Index';
+import React, { useEffect, useState } from 'react'
+import recycleAuthService from '../appwrite/RecycleAuth'
+import { Link } from 'react-router-dom'
+import { Container } from '../Index'
+import { toast } from 'react-toastify'
 
-function RecycleRequets() {
-    const [loading, setLoading] = useState(true);
-    const [recycleProduct, setRecycleProduct] = useState([]);
-    const [error, setError] = useState('');
+function RecycleRequests() {
+    const [loading, setLoading] = useState(true)
+    const [recycleProducts, setRecycleProducts] = useState([])
+    const [error, setError] = useState('')
 
     useEffect(() => {
-        console.log('Fetching recycle products...');
-        recycleAuthService.listRecycleProducts()
-            .then((response) => {
-                if (response?.documents) {
-                    setRecycleProduct(response.documents);
-                } else {
-                    console.warn('No documents found in response');
-                }
-            })
-            .catch((error) => {
-                console.error('Error fetching products:', error);
-                setError(error.message || 'Error fetching products');
-            })
-            .finally(() => {
-                console.log('Fetch completed');
-                setLoading(false);
-            });
-    }, []);
+        const fetchRecycleProducts = async () => {
+            try {
+                const response = await recycleAuthService.listRecycleProducts()
+                setRecycleProducts(response?.documents || [])
+            } catch (error) {
+                console.error('Error fetching recycle products:', error)
+                setError(error.message || 'Error fetching products')
+            } finally {
+                setLoading(false)
+            }
+        }
+        fetchRecycleProducts()
+    }, [])
 
-    const acceptRequets = async (product) => {
+    const acceptRequest = async (product) => {
         try {
-            console.log("Accepting request for product:", product);
+            console.log("Accepting request for product:", product)
 
             if (!product?.$id) {
-                console.error("Invalid product ID:", product);
-                return;
+                console.error("Invalid product ID:", product)
+                return
             }
 
-            const agency = await recycleAuthService.getCurrentRecycleAgency();
+            const agency = await recycleAuthService.getCurrentRecycleAgency()
             if (!agency || !agency.$id) {
-                console.error("Agency not found!", agency);
-                return;
+                console.error("Agency not found!")
+                return
             }
 
-            const agencyID = agency.$id;
-            console.log("Agency ID:", agencyID);
-
-            // Check if product exists before accepting
-            const existingProduct = await recycleAuthService.getRecycleProduct(product.$id);
+            const existingProduct = await recycleAuthService.getRecycleProduct(product.$id)
             if (!existingProduct) {
-                console.warn("Product not found in database!");
-                return;
+                console.warn("Product not found in database!")
+                return
             }
 
             await recycleAuthService.acceptedRecycleProducts({
-                agencyID,
+                agencyID: agency.$id,
                 productID: product.$id,
                 title: product.title,
                 category: product.category,
                 weight: product.weight,
                 pickupAddress: product.pickupAddress,
                 productImage: product.productImage,
-            });
+            })
 
-            await recycleAuthService.deleteRecycleProduct(product.$id);
-            setRecycleProduct((prev) => prev.filter((p) => p.$id !== product.$id));
+            await recycleAuthService.deleteRecycleProduct(product.$id)
+            setRecycleProducts((prev) => prev.filter((p) => p.$id !== product.$id))
+            toast.success('Request accepted successfully!', { position: 'top-center' })
 
-            console.log("Product accepted and removed from UI.");
         } catch (error) {
-            console.error("Error accepting request:", error);
+            console.error("Error accepting request:", error)
+            toast.error('Failed to accept request.', { position: 'top-center' })
         }
-    };
-
-    if (loading) {
-        return <div>Loading products...</div>;
-    }
-
-    if (error) {
-        return <div>Error: {error}</div>;
-    }
-
-    if (recycleProduct.length === 0) {
-        return <div>No products available</div>;
     }
 
     return (
-        <div className="w-full py-6">
-            <div className="flex flex-wrap gap-8">
-                {recycleProduct.map((product) => (
-                    <div key={product.$id} className="gap-10 p-3">
-                        <div className='w-[250px] p-3 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg'>
-                            <Link to={`/${product.$id}`}>
-                                <div className="flex">
-                                    <img
-                                        src={recycleAuthService.getProductFilePreview(product.productImage)}
-                                        alt={product.title}
-                                        className="rounded-xl object-fill object-center h-[300px] w-full"
-                                    />
-                                </div>
-                                <h2 className='font-medium text-xl'>{product.title}</h2>
-                                <h1 className='font-semibold text-lg'>Category: {product.category}</h1>
-                                <h2 className='font-medium text-xl'>Weight: {product.weight}</h2>
-                                <h2 className='font-medium text-xl'>Address: {product.pickupAddress}</h2>
-                            </Link>
-                            <button onClick={() => acceptRequets(product)} className='bg-red-300 px-5 py-3 rounded-xl hover:bg-red-500 text-lg font-medium'>accept</button>
-                        </div>
+        <div className="w-full min-h-[80vh] flex flex-col justify-center items-center bg-gray-50 py-6">
+            <Container>
+                {loading ? (
+                    <div className="text-center text-lg font-medium">Loading products...</div>
+                ) : error ? (
+                    <div className="text-center text-red-500 text-lg font-medium">Error: {error}</div>
+                ) : recycleProducts.length === 0 ? (
+                    <div className="flex justify-center items-center min-h-[60vh]">
+                        <h3 className="text-center text-gray-500 text-2xl font-semibold">No recycling requests available</h3>
                     </div>
-                ))}
-            </div>
+                ) : (
+                    <div className="flex flex-wrap gap-8 justify-center">
+                        {recycleProducts.map((product) => (
+                            <div key={product.$id} className="p-3 shadow-lg rounded-lg bg-white hover:shadow-xl transition-transform transform hover:scale-105 w-[280px]">
+                                <Link to={`/${product.$id}`} className="block">
+                                    <div className="flex justify-center">
+                                        <img
+                                            src={recycleAuthService.getProductFilePreview(product.productImage)}
+                                            alt={product.title}
+                                            className="rounded-xl object-cover h-[250px] w-full"
+                                        />
+                                    </div>
+                                    <h2 className='font-semibold text-xl mt-3'>{product.title}</h2>
+                                    <h1 className='font-medium text-lg text-gray-600'>Category: {product.category}</h1>
+                                    <h2 className='font-medium text-lg'>Weight: {product.weight} kg</h2>
+                                    <h2 className='font-medium text-lg break-words whitespace-normal'>
+                                        Address: {product.pickupAddress}
+                                    </h2>
+                                </Link>
+                                <button
+                                    onClick={() => acceptRequest(product)}
+                                    className='mt-3 w-full py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 text-lg font-medium transition'
+                                >
+                                    Accept Request
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </Container>
         </div>
-    );
+    )
 }
 
-export default RecycleRequets;
+export default RecycleRequests

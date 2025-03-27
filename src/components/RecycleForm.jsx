@@ -7,11 +7,11 @@ import { toast } from 'react-toastify'
 import productService from '../appwrite/Product'
 
 function RecycleForm({ product }) {
-    const { register, handleSubmit,  setValue } = useForm({
+    const { register, handleSubmit, setValue } = useForm({
         defaultValues: {
             title: '',
             category: '',
-            Weight: '',
+            weight: '',
             productImage: '',
             pickupAddress: ''
         }
@@ -30,23 +30,20 @@ function RecycleForm({ product }) {
         setValue('pickupAddress', '')
     }
 
-
     const submit = async (data) => {
-        if (isSubmitting)
-            return;
+        if (isSubmitting) return;
         setIsSubmitting(true)
 
         try {
-            console.log('recycle data', data)
             if (!userData) {
-                console.log('login', error)
-                toast.success('Login to Recycle', { position: 'top-center' })
+                toast.error('Login to Recycle', { position: 'top-center' })
+                return;
             }
-            let recycleFileID = null
+
+            let recycleFileID = null;
             if (file) {
-                console.log('file uploading')
                 const uploadFile = await productService.uploadProductFile(file, userData.$id)
-                recycleFileID = uploadFile.$id
+                recycleFileID = uploadFile.$id;
             }
 
             const weight = parseInt(data.weight, 10);
@@ -54,6 +51,7 @@ function RecycleForm({ product }) {
                 toast.error("Weight must be a valid number!", { position: "top-center" });
                 return;
             }
+
             if (!product) {
                 const dbProduct = await productService.addToRecycle(
                     userData.$id,
@@ -62,83 +60,78 @@ function RecycleForm({ product }) {
                     recycleFileID,
                     weight,
                     data.pickupAddress
-                )
+                );
+
                 if (dbProduct) {
-                    console.log('Product donated:', dbProduct);
-                    navigate(`/recycle-page`);
                     toast.success("🎉 Thanks for Recycling!", { position: "top-center" });
-                    resetForm()
+                    navigate(`/recycle-page`);
+                    resetForm();
                 }
             }
         } catch (error) {
-            console.log('submit recycle', error)
+            console.error('Submit recycle error:', error);
+            toast.error("Failed to recycle. Try again.", { position: "top-center" });
+        } finally {
+            setIsSubmitting(false);
         }
     }
+
     return (
-        <form onSubmit={handleSubmit(submit)} className='w-full min-h-screen flex gap-5 py-5 px-7'>
-            <div className='flex flex-col gap-6 w-[50%]'>
+        <form onSubmit={handleSubmit(submit)} className='w-full min-h-screen flex flex-col md:flex-row gap-6 p-8 bg-gray-50 rounded-lg shadow-md'>
+            <div className='flex flex-col gap-6 w-full md:w-1/2'>
                 <Input
                     label='Title:'
                     type='text'
-                    placeholder='enter title'
-                    className='w-full border py-3 px-5  '
-                    {...register('title', {
-                        required: true
-                    })}
+                    placeholder='Enter title'
+                    className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+                    {...register('title', { required: true })}
                 />
                 <Select
                     label='Category'
                     options={['paper', 'cardboard', 'metal', 'other']}
-                    className='w-full border py-3 px-5  '
-                    {...register('category', {
-                        required: true
-                    })}
+                    className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+                    {...register('category', { required: true })}
                 />
                 <Input
-                    label='Weight'
+                    label='Weight (kg)'
                     type='number'
-                    placeholder='enter weight'
-                    className='w-full border py-3 px-5  '
-                    {...register('weight', {
-                        required: true
-                    })}
+                    placeholder='Enter weight'
+                    className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+                    {...register('weight', { required: true })}
                 />
             </div>
-            <div className='w-[50%] flex flex-col gap-6'>
+            <div className='w-full md:w-1/2 flex flex-col gap-6'>
                 <Input
-                    label="Product Image :"
+                    label="Product Image:"
                     type="file"
-                    className="mb-4  px-10 py-3 w-full"
+                    className="border-gray-300 rounded-lg shadow-sm p-3"
                     onChange={(e) => setFile(e.target.files[0])}
                     accept="image/png, image/jpg, image/jpeg, image/gif"
-                // {...register("image", { required: !product })}
                 />
                 {product?.productImage ? (
-                    <div className="w-full mb-4">
+                    <div className="w-full">
                         <img
                             src={productService.getProductFilePreview(product.productImage)}
                             alt={product.title}
-                            className="rounded-lg"
+                            className="rounded-lg shadow-md"
                         />
                     </div>
                 ) : (
                     <p className="text-gray-500">No preview available</p>
                 )}
                 <Input
-                    label='address'
+                    label='Pickup Address'
                     type='text'
-                    placeholder='enter address(House No , building, Street Area - Town/Locality - City/District - State - Pincode)'
-                    className='border  px-10 py-3 w-full h-[200px]'
-                    {...register('pickupAddress', {
-                        required: true
-                    })}
+                    placeholder='Enter full address (House No, Building, Street, City, State, Pincode)'
+                    className='border-gray-300 rounded-lg shadow-sm p-3 h-[150px]'
+                    {...register('pickupAddress', { required: true })}
                 />
-                <Button type="submit" disabled={isSubmitting} bgColor={product ? 'bg-green-300' : undefined} className="w-full bg-green-300">
-                    Recycle
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-700 transition">
+                    {isSubmitting ? "Recycling..." : "Recycle Now"}
                 </Button>
             </div>
         </form>
     )
 }
 
-export default RecycleForm
+export default RecycleForm;

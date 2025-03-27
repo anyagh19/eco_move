@@ -2,8 +2,6 @@ import React,{useState , useEffect} from 'react'
 import shiftAuthService from '../appwrite/ShiftAuthService'
 import { Link } from 'react-router-dom'
 import shiftDeliveryAuthService from '../appwrite/ShiftDeliveryAuthService'
-//import shiftAuthService from '../appwrite/ShiftAuthService'
-
 
 function DeliveryRequetsPage() {
   const [loading, setLoading] = useState(true)
@@ -28,8 +26,6 @@ function DeliveryRequetsPage() {
         console.log('Fetch completed');
         setLoading(false);
       });
-
-
   }, [])
 
   const acceptedDeliveryRequets = async (product) => {
@@ -55,14 +51,11 @@ function DeliveryRequetsPage() {
       }
 
       await shiftDeliveryAuthService.acceptedDeliveryProducts({
-
         productID: product.$id,
         agencyID,
         title: product.title,
-        //price: product.price,
         productImage: product.productImage,
-      }
-      )
+      })
 
       await shiftAuthService.deleteDeliveryProduct(product.$id);
       setDeliveryProducts((prev) => prev.filter((p) => p.$id !== product.$id));
@@ -74,41 +67,33 @@ function DeliveryRequetsPage() {
     }
   }
 
-  if (loading) {
-    return <div>Loading products...</div>;
-  }
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (deliveryProducts.length === 0) {
-    return <div>No products available</div>;
-  }
   return (
-    <div className="w-full py-6">
-      <div className="flex flex-wrap gap-8">
-        {deliveryProducts.map((product) => (
-          <div key={product.$id} className="gap-10 p-3">
-            <div className='w-[250px] p-3 transition-transform duration-300 ease-in-out transform hover:scale-105 hover:shadow-lg'>
-              <Link to={`/${product.$id}`}>
-                <div className="flex">
-                  <img
-                    src={shiftAuthService.getProductFilePreview(product.productImage)}
-                    alt={product.title}
-                    className="rounded-xl object-fill object-center h-[300px] w-full"
-                  />
-                </div>
-                <h2 className='font-medium text-xl'>{product.title}</h2>
-                {/* <h1 className='font-semibold text-lg'>Category: {product.category}</h1> */}
-                {/* <h2 className='font-medium text-xl'>Weight: {product.price}</h2> */}
-                {/* <h2 className='font-medium text-xl'>Address: {product.pickupAddress}</h2> */}
-              </Link>
-              <button onClick={() => acceptedDeliveryRequets(product)} className='bg-red-300 px-5 py-3 rounded-xl hover:bg-red-500 text-lg font-medium'>accept</button>
+    <div className="w-full py-6 bg-gray-50 flex flex-col items-center min-h-[80vh]">
+      {loading ? (
+        <div className="text-center text-lg font-medium">Loading products...</div>
+      ) : error ? (
+        <div className="text-center text-red-500 text-lg font-medium">Error: {error}</div>
+      ) : deliveryProducts.length === 0 ? (
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <h3 className="text-center text-gray-500 text-2xl font-semibold">No products available</h3>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {deliveryProducts.map((product) => (
+            <div key={product.$id} className="p-4 shadow-lg rounded-lg bg-white hover:shadow-xl transition-transform transform hover:scale-105 w-full max-w-sm">
+              <div className="flex justify-center">
+                <img
+                  src={shiftAuthService.getProductFilePreview(product.productImage)}
+                  alt={product.title}
+                  className="rounded-xl object-cover h-[250px] w-full"
+                />
+              </div>
+              <h2 className='font-semibold text-xl mt-3'>{product.title}</h2>
+              <button onClick={() => acceptedDeliveryRequets(product)} className='w-full mt-3 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600 text-lg font-medium transition'>Accept</button>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import productService from "../appwrite/Product";
 import { Container, ProductCard } from "../Index";
 
@@ -8,52 +8,44 @@ function BuyPage() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        console.log('Fetching products...');
         productService.listActiveProduct()
             .then((response) => {
-                console.log('API Response:', response); // Log the response
                 if (response?.documents) {
-                    console.log('Products found:', response.documents); // Log the documents
                     setProducts(response.documents);
-                } else {
-                    console.warn('No documents found in response');
                 }
             })
             .catch((error) => {
-                console.error('Error fetching products:', error); // Log the error
-                setError(error.message || 'Error fetching products');
+                setError(error.message || "Error fetching products");
             })
-            .finally(() => {
-                console.log('Fetch completed');
-                setLoading(false);
-            });
+            .finally(() => setLoading(false));
     }, []);
 
     if (loading) {
-        return <div>Loading products...</div>;
+        return <div className="text-center text-white py-10">Loading products...</div>;
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return <div className="text-center text-red-500 py-10">Error: {error}</div>;
     }
 
     if (products.length === 0) {
-        return <div>No products available</div>;
+        return <div className="text-center text-gray-400 py-10">No products available</div>;
     }
 
     return (
-        <div className="w-full  py-6 " >
-            {/* <Container> */}
-                <div className="flex flex-wrap gap-8">
-                    {products.map((product) => (
-                        <div key={product.$id} className="gap-10  p-3">
-                            <ProductCard {...product} />
-                        </div>
-                    ))}
-                </div>
-            {/* </Container> */}
+        <div className="bg-gray-50 w-full">
+            <Container className="bg-gray-900 text-white min-h-screen py-6">
+            <h1 className="text-3xl font-bold text-center mb-8">Available Products</h1>
+            <div className="flex flex-wrap justify-center gap-8">
+                {products.map((product) => (
+                    <div key={product.$id} className="p-3  rounded-lg shadow-lg hover:shadow-xl transition duration-300">
+                        <ProductCard {...product} />
+                    </div>
+                ))}
+            </div>
+        </Container>
         </div>
     );
 }
 
-export default BuyPage
+export default BuyPage;

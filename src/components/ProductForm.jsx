@@ -1,197 +1,163 @@
-import React, { useEffect, useCallback, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import productService from '../appwrite/Product'
-import { Input, Button, RTE, Select } from '../Index'
-import { toast } from 'react-toastify'
-
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import productService from '../appwrite/Product';
+import { Input, Button, RTE, Select } from '../Index';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function ProductForm({ product }) {
-    const { register, handleSubmit, watch, control, setValue, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, getValues } = useForm({
         defaultValues: {
             title: product?.title || '',
             description: product?.description || '',
             category: product?.category || '',
             price: product?.price || '',
             productImage: product?.productImage || '',
-            //    productID: product?.productID || '',
+            address: product?.address || '',
             status: product?.status || 'active',
         }
-    })
+    });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const navigate = useNavigate()
-    const [file, setFile] = useState(null)
-    const userData = useSelector((state) => state.auth.userData)
-    
-    
+    const [file, setFile] = useState(null);
+    const navigate = useNavigate();
+    const userData = useSelector((state) => state.auth.userData);
 
-    
     const resetForm = () => {
         setValue('title', '');
         setValue('description', '');
         setValue('category', '');
         setValue('price', '');
+        setValue('address', '');
         setValue('status', 'active');
         setFile(null);
     };
 
     const submit = async (data) => {
-        if (isSubmitting) return; // Prevent duplicate submissions
+        if (isSubmitting) return;
         setIsSubmitting(true);
+        
         try {
-            console.log('Form data:', data); // Log form data
             if (!userData?.$id) {
-                console.error("User not authenticated.");
+                toast.error("You need to log in first!", { position: "top-center" });
                 return;
             }
 
             let fileID = null;
-
             if (file) {
-                console.log('Uploading file...'); // Log file upload
                 const uploadedFile = await productService.uploadProductFile(file, userData.$id);
                 fileID = uploadedFile.$id;
-                console.log('File uploaded with ID:', fileID); // Log file ID
             }
 
             if (product) {
-                console.log('Updating product...'); // Log product update
                 if (fileID) {
                     await productService.deleteProductFile(product.productImage);
                 }
-
                 const dbProduct = await productService.updateProduct(product.$id, {
                     ...data,
                     productImage: fileID || product.productImage,
                     price: parseFloat(data.price),
-
                 });
 
                 if (dbProduct) {
-                    console.log('Product updated:', dbProduct); // Log updated product
+                    toast.success("Product Updated Successfully!", { position: "top-center" });
                     navigate(`/product/${dbProduct.$id}`);
                 }
             } else {
-
-                console.log('Creating product...'); // Log product creation
                 const dbProduct = await productService.createProduct({
                     ...data,
                     status: 'active',
                     productImage: fileID,
                     userID: userData.$id,
                     price: parseFloat(data.price),
-                    //documentID: ID.unique(), 
                 });
 
                 if (dbProduct) {
-                    console.log('Product created:', dbProduct); // Log created product
+                    toast.success("Product Added Successfully!", { position: "top-center" });
                     navigate(`/product/${dbProduct.$id}`);
-
-
-                }
-                if (dbProduct) {
-                    console.log('Product created:', dbProduct);
-                    navigate(`/product/${dbProduct.$id}`);
-                    // Clear form after successful submission
-                    toast.success("Product Added Succesfully!" , {position: 'top-center'})
                     resetForm();
                 }
-
             }
         } catch (error) {
-            console.error('Error in submit:', error); // Log errors
-        }
-        finally {
+            console.error("Error in submission:", error);
+            toast.error("Failed to process the request. Try again.");
+        } finally {
             setIsSubmitting(false);
-            console.log("Submitting data:", data);
-            delete data.$id;
-            delete data.productID;
         }
     };
 
-    
-    
     return (
-        <form onSubmit={handleSubmit(submit)} className='flex w-full gap-4'>
-            <div className='w-[55%] px-4 py-7 gap-5 flex flex-col min-h-screen'>
+        <form onSubmit={handleSubmit(submit)} className="w-full min-h-screen flex flex-col md:flex-row gap-6 p-8 bg-gray-50 rounded-lg shadow-md">
+            <div className="flex flex-col gap-6 w-full md:w-1/2">
                 <Input
-                    label='Title:'
-                    type='text'
-                    placeholder='enetr title'
-                    className='border px-10 py-3 w-full'
-                    {...register('title', {
-                        required: true
-                    })}
+                    label="Title:"
+                    type="text"
+                    placeholder="Enter title"
+                    className="w-full border-gray-300 rounded-lg shadow-sm p-3"
+                    {...register("title", { required: true })}
                 />
                 <Select
-                    options={['furniture', 'electronics', 'others']}
                     label="Category"
-                    className="mb-4  px-10 py-3 w-full"
-                    placeholder='choose category'
+                    options={["Furniture", "Electronics", "Others"]}
+                    className="w-full border-gray-300 rounded-lg shadow-sm p-3"
                     {...register("category", { required: true })}
                 />
-                
                 <RTE
-                    label='description'
-                    name='description'
-                    className='border-2'
+                    label="Description"
+                    name="description"
+                    className="border-gray-300 rounded-lg shadow-sm p-3"
                     control={control}
-                    defaultValue={getValues('description')}
+                    defaultValue={getValues("description")}
                 />
             </div>
-            <div className='w-[45%] px-4 py-7 gap-5 flex flex-col'>
+
+            <div className="w-full md:w-1/2 flex flex-col gap-6">
                 <Input
-                    label="Product Image :"
+                    label="Product Image:"
                     type="file"
-                    className="mb-4  px-10 py-3 w-full"
+                    className="border-gray-300 rounded-lg shadow-sm p-3"
                     onChange={(e) => setFile(e.target.files[0])}
                     accept="image/png, image/jpg, image/jpeg, image/gif"
-                // {...register("image", { required: !product })}
                 />
                 {product?.productImage ? (
-                    <div className="w-full mb-4">
+                    <div className="w-full">
                         <img
                             src={productService.getProductFilePreview(product.productImage)}
                             alt={product.title}
-                            className="rounded-lg"
+                            className="rounded-lg shadow-md"
                         />
                     </div>
                 ) : (
                     <p className="text-gray-500">No preview available</p>
                 )}
                 <Input
-                    label='Price'
-                    type='float'
-                    placeholder='enetr price'
-                    className='border  px-10 py-3 w-full'
-                    {...register('price', {
-                        required: true
-                    })}
+                    label="Price"
+                    type="number"
+                    placeholder="Enter price"
+                    className="border-gray-300 rounded-lg shadow-sm p-3"
+                    {...register("price", { required: true })}
                 />
-                <Input 
-                label='address'
-                type='text'
-                placeholder='enter address(House No , building, Street Area - Town/Locality - City/District - State - Pincode)'
-                className='border  px-10 py-3 w-full h-[200px]'
-                {...register('address', {
-                    required: true
-                })}
+                <Input
+                    label="Address"
+                    type="text"
+                    placeholder="Enter address (House No, Street, City, State, Pincode)"
+                    className="border-gray-300 rounded-lg shadow-sm p-3 h-[150px]"
+                    {...register("address", { required: true })}
                 />
                 <Select
-                    options={["active", "inactive"]}
                     label="Status"
-                    className="mb-4  px-10 py-3 w-full "
+                    options={["Active", "Inactive"]}
+                    className="w-full border-gray-300 rounded-lg shadow-sm p-3"
                     {...register("status", { required: true })}
                 />
-                <Button type="submit" disabled={isSubmitting} bgColor={product ? 'bg-red-300' : undefined} className="w-full bg-red-300">
-                    {product ? "Update" : "Submit"}
+                <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 transition">
+                    {isSubmitting ? "Processing..." : product ? "Update Product" : "Submit Product"}
                 </Button>
             </div>
         </form>
-    )
+    );
 }
 
-export default ProductForm
-
+export default ProductForm;
