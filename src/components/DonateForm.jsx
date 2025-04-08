@@ -86,7 +86,7 @@ function DonateForm({ product }) {
                 />
                 <Select
                     label="Category"
-                    options={["Furniture", "Electronics", "Others"]}
+                    options={["furniture", "electronics", "others"]}
                     className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-900 p-3"
                     {...register("category", { required: true })}
                 />
