@@ -213,7 +213,7 @@ export class ProductService {
             return "/default-image.png"; // Provide a placeholder image
         }
         console.log('Fetching preview for fileID:', fileID); // Log the file ID
-        return this.bucket.getFilePreview(
+        return this.bucket.getFileView(
             conf.appwriteBucketID,
             fileID
         );
@@ -445,7 +445,7 @@ export class ProductService {
         }
     }
 
-    async addToShift(userID , userName , userPhone , userEmail , pickupAddress , dropAddress , shiftType , shiftVehicle){
+    async addToShift(userID , userName , userPhone , userEmail , pickupAddress , dropAddress , shiftType , shiftVehicle, shiftItems , houseType){
         try {
             return await this.databases.createDocument(
                 conf.appwriteDatabaseID,
@@ -459,7 +459,9 @@ export class ProductService {
                     pickupAddress,
                     dropAddress,
                     shiftType,
-                    shiftVehicle
+                    shiftVehicle,
+                    shiftItems,
+                    houseType
                 },
                 [
                     Permission.read(Role.any()), // Anyone can read

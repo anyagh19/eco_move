@@ -38,7 +38,7 @@ function Header() {
     <header className='bg-gray-900 shadow-lg'>
       <Container>
         <nav className='flex justify-between items-center py-3 px-8'>
-          <div className='w-[18%] cursor-pointer' onClick={() => navigate("/")}> <Logo /> </div>
+          <div className='md:w-[18%] w-[50%]  cursor-pointer' onClick={() => navigate("/")}> <Logo /> </div>
           
           <button className='lg:hidden text-white' onClick={toggleMenu}>
             <Menu size={28} />

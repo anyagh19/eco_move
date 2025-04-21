@@ -1,10 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const storedUserData = localStorage.getItem("userData");
+let parsedUserData = null;
+
+try {
+    parsedUserData = storedUserData ? JSON.parse(storedUserData) : null;
+} catch (error) {
+    console.error("Failed to parse userData:", error);
+}
+
 const initialState = {
     status: localStorage.getItem("status") === "true" || false,
-    userData: JSON.parse(localStorage.getItem("userData")) || null,
+    userData: parsedUserData,
     role: localStorage.getItem("role") || null,
 };
+
 
 const authSlice = createSlice({
     name: "auth",

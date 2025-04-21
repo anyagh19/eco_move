@@ -1,13 +1,20 @@
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import productService from '../appwrite/Product'
 import { Input, Button, Select } from '../Index'
 
+const itemOptions = {
+  household: ['Electronics', 'Furniture', 'Kitchenware', 'Books'],
+  office: ['Desks', 'Chairs', 'Computers'],
+  furniture: ['Sofa', 'Bed', 'Wardrobe'],
+  appliance: ['Washing Machine', 'Fridge', 'Microwave']
+}
+
 function ShiftForm({ product }) {
-  const { register, handleSubmit, setValue } = useForm({
+  const { register, handleSubmit, setValue, control, watch } = useForm({
     defaultValues: {
       userName: '',
       userPhone: '',
@@ -15,33 +22,36 @@ function ShiftForm({ product }) {
       pickupAddress: '',
       dropAddress: '',
       shiftType: '',
-      shiftVehicle: ''
+      shiftVehicle: '',
+      shiftItems: '',
+      houseType: ''
     }
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const userData = useSelector((state) => state.auth.userData)
   const navigate = useNavigate()
+  const selectedShiftType = watch('shiftType')
 
   const resetForm = () => {
-    setValue('userName', '')
-    setValue('userPhone', '')
-    setValue('userEmail', '')
-    setValue('pickupAddress', '')
-    setValue('dropAddress', '')
-    setValue('shiftType', '')
-    setValue('shiftVehicle', '')
+    const fields = [
+      'userName', 'userPhone', 'userEmail', 'pickupAddress',
+      'dropAddress', 'shiftType', 'shiftVehicle', 'shiftItems', 'houseType'
+    ]
+    fields.forEach(field => setValue(field, field === 'shiftItems' ? [] : ''))
   }
 
   const submit = async (data) => {
-    if (isSubmitting) return;
+    if (isSubmitting) return
     setIsSubmitting(true)
 
     try {
       if (!userData) {
         toast.error('Login to proceed with shifting', { position: 'top-center' })
-        return;
+        return
       }
+
+      console.log("Submitting shift data:", data)
 
       const dbProduct = await productService.addToShift(
         userData.$id,
@@ -51,19 +61,21 @@ function ShiftForm({ product }) {
         data.pickupAddress,
         data.dropAddress,
         data.shiftType,
-        data.shiftVehicle
+        data.shiftVehicle,
+        data.shiftItems.toString(),
+        data.houseType
       )
 
       if (dbProduct) {
         toast.success("🎉 Thanks for your shifting request!", { position: "top-center" });
-        navigate(`/shift-page`);
+        navigate(`/shift-page`)
         resetForm()
       }
     } catch (error) {
       console.error('Shift submission failed:', error)
       toast.error("Failed to process shift request. Try again.", { position: "top-center" });
     } finally {
-      setIsSubmitting(false);
+      setIsSubmitting(false)
     }
   }
 
@@ -93,15 +105,55 @@ function ShiftForm({ product }) {
         />
         <Select
           label='Shift Type'
-          options={['Household', 'Office', 'Furniture', 'Appliance']}
+          options={['household', 'office', 'furniture', 'appliance']}
           className='w-full border-gray-300 rounded-lg shadow-sm p-3'
           {...register('shiftType', { required: true })}
         />
+
+{selectedShiftType && (
+  <Controller
+  name="shiftItems"
+  control={control}
+  defaultValue={[]}
+  rules={{ required: true }}
+  render={({ field }) => (
+    <div className='flex flex-col'>
+      <label className='mb-1 font-medium text-gray-700'>Select Items</label>
+      <select
+        multiple
+        className='border-gray-300 rounded-lg shadow-sm p-3 h-32'
+        value={field.value || []}
+        onChange={(e) => {
+          const selectedValues = Array.from(e.target.selectedOptions, (option) => option.value)
+          field.onChange(selectedValues)
+        }}
+      >
+        {(itemOptions[selectedShiftType] || []).map((item, index) => (
+          <option key={index} value={item}>{item}</option>
+        ))}
+      </select>
+    </div>
+  )}
+/>
+
+)}
+
+
+
+        {selectedShiftType === 'Household' && (
+          <Select
+            label='House Type'
+            options={['1 BHK', '2 BHK', '3 BHK', 'Villa']}
+            className='w-full border-gray-300 rounded-lg shadow-sm p-3'
+            {...register('houseType', { required: true })}
+          />
+        )}
       </div>
+
       <div className='w-full md:w-1/2 flex flex-col gap-6'>
         <Select
           label='Shift Vehicle'
-          options={['Mini Truck', 'Tempo', 'Lorry']}
+          options={['miniTruck', 'tempo', 'lorry']}
           className='w-full border-gray-300 rounded-lg shadow-sm p-3'
           {...register('shiftVehicle', { required: true })}
         />
@@ -127,4 +179,4 @@ function ShiftForm({ product }) {
   )
 }
 
-export default ShiftForm;
+export default ShiftForm

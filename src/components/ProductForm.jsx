@@ -100,7 +100,7 @@ function ProductForm({ product }) {
                 />
                 <Select
                     label="Category"
-                    options={["Furniture", "Electronics", "Others"]}
+                    options={["furniture", "electronics", "others"]}
                     className="w-full border-gray-300 rounded-lg shadow-sm p-3"
                     {...register("category", { required: true })}
                 />
