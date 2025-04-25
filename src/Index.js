@@ -38,6 +38,9 @@ import ShiftingRequetsPage from './pages/ShiftingRequetsPage'
 import ShiftingDonationProducts from './pages/shiftingProducts/ShiftingDonationProducts'
 import ShiftingDeliveryProducts from './pages/shiftingProducts/ShiftingDeliveryProducts'
 import ShiftingShiftProducts from './pages/shiftingProducts/ShiftingShiftProducts'
+import OrphanageCard from './components/OrphanageCard'
+import OrphanagesPage from './pages/OrphanagesPage'
+
 
 export{
     Header,
@@ -79,5 +82,8 @@ export{
     ShiftingRequetsPage,
     ShiftingDeliveryProducts,
     ShiftingDonationProducts,
-    ShiftingShiftProducts
+    ShiftingShiftProducts,
+    OrphanageCard,
+    OrphanagesPage,
+    
 }

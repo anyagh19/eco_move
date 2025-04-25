@@ -10,18 +10,35 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function DonateForm({ product }) {
-    const { register, handleSubmit, control, getValues, setValue } = useForm({
+    const agencyData = {
+        "Orphanage": ["Hope for Children", "Sunrise Orphanage", "Little Angels"],
+        "Old Age Home": ["Golden Years", "Silver Haven", "Elder Bliss"],
+        "Others": ["Community Center A", "Shelter Home B"],
+    };
+
+    const {
+        register,
+        handleSubmit,
+        control,
+        getValues,
+        setValue,
+    } = useForm({
         defaultValues: {
             title: "",
             category: "",
             description: "",
             productImage: "",
             pickupAddress: "",
+            agencyType: "",
+            selectedAgency: "",
         },
     });
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [file, setFile] = useState(null);
+    const [selectedType, setSelectedType] = useState("");
+    const [availableAgencies, setAvailableAgencies] = useState([]);
+
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
@@ -31,6 +48,18 @@ function DonateForm({ product }) {
         setValue("description", "");
         setFile(null);
         setValue("pickupAddress", "");
+        setValue("agencyType", "");
+        setValue("selectedAgency", "");
+        setSelectedType("");
+        setAvailableAgencies([]);
+    };
+
+    const handleAgencyTypeChange = (e) => {
+        const type = e.target.value;
+        setSelectedType(type);
+        setValue("agencyType", type);
+        setAvailableAgencies(agencyData[type] || []);
+        setValue("selectedAgency", ""); // reset specific agency on type change
     };
 
     const submit = async (data) => {
@@ -56,7 +85,9 @@ function DonateForm({ product }) {
                     data.category,
                     data.description,
                     fileID,
-                    data.pickupAddress
+                    data.pickupAddress,
+                    data.agencyType,
+                    data.selectedAgency
                 );
 
                 if (dbProduct) {
@@ -74,7 +105,10 @@ function DonateForm({ product }) {
     };
 
     return (
-        <form onSubmit={handleSubmit(submit)} className="w-full min-h-screen flex flex-col md:flex-row gap-6 p-8 bg-gray-50 rounded-lg shadow-md">
+        <form
+            onSubmit={handleSubmit(submit)}
+            className="w-full min-h-screen flex flex-col md:flex-row gap-6 p-8 bg-gray-50 rounded-lg shadow-md"
+        >
             {/* Left Section */}
             <div className="flex flex-col gap-6 w-full md:w-1/2">
                 <Input
@@ -90,6 +124,20 @@ function DonateForm({ product }) {
                     className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-900 p-3"
                     {...register("category", { required: true })}
                 />
+                <Select
+                    label="Select Agency Type"
+                    options={Object.keys(agencyData)}
+                    className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-900 p-3"
+                    onChange={handleAgencyTypeChange}
+                />
+                {availableAgencies.length > 0 && (
+                    <Select
+                        label="Select Specific Agency"
+                        options={availableAgencies}
+                        className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-gray-900 p-3"
+                        {...register("selectedAgency", { required: true })}
+                    />
+                )}
                 <RTE
                     label="Description"
                     name="description"

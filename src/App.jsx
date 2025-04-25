@@ -39,10 +39,10 @@ function App() {
         <div className='w-full min-h-screen relative'>
             <ToastContainer position="top-center" autoClose={3000} />
             <a
-                href="https://wa.me/7558417655" // Replace with your number
+                href="https://wa.me/+919699381805" // Replace with your number
                 target="_blank"
                 rel="noopener noreferrer"
-                className='fixed text-green-400 ml-[93%] mt-[80%] md:ml-[97%] text-4xl md:mt-[30%]'
+                className='fixed bg-gray-300 p-2 text-green-400 ml-[93%] mt-[80%] md:ml-[97%] text-4xl md:mt-[30%]'
                 title="Chat with us on WhatsApp"
             >
                 <MessageSquareText className='text-4xl cursor-pointer hover:scale-110 transition-transform' />

@@ -34,11 +34,12 @@ export class ShiftAuthService {
                     agencyName,
                     agencyEmail,
                     agencyPhone,
-                    agencyPassword,
+                    
                     agencyAddress,
                     serviceArea,
                     vehicleAvailable
                 },
+
                 [
                     Permission.read(Role.any()), // Anyone can read
                     Permission.update(Role.any()), // Fix: Correctly format user role
@@ -48,7 +49,8 @@ export class ShiftAuthService {
             );
             return shiftDoc;
         } catch (error) {
-            console.log('create s a'.error)
+            console.error("createShiftingAgency error:", error);
+
             throw error;
         }
     }

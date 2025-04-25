@@ -386,7 +386,7 @@ export class ProductService {
         }
     }
     
-    async addToDonate(userID , title , category , description , productImage , pickupAddress){
+    async addToDonate(userID , title , category , description , productImage , pickupAddress , agencyType , selectedAgency){
         try {
             if(!userID){
                 alert('login first')
@@ -402,7 +402,9 @@ export class ProductService {
                     category,
                     description,
                     productImage,
-                    pickupAddress
+                    pickupAddress,
+                    agencyType,
+                    selectedAgency
                 },
                 [
                     Permission.read(Role.any()), // Anyone can read

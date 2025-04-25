@@ -9,7 +9,7 @@ import Login from './components/Login.jsx'
 import Signup from './components/Signup.jsx'
 import Account from './pages/Account.jsx'
 import Orders from './pages/Orders.jsx'
-import { AcceptedRecycleRequets, BuyPage, CartProducts, CategoryProduct, DeliveryRequetsPage, DonateForm, DonatePage, DonationRequetsPage, EditProduct, MyProduct, ProductForm, RecycleAgencyLogin,  RecycleAgencySignup, RecycleForm, RecyclePage, RecycleRequets, SellPage, ShiftForm, ShiftingAgencyLogin, ShiftingAgencySignup, ShiftingRequetsPage, ShiftPage, WishList , ShiftingAgencyPage, ShiftingDonationProducts, ShiftingDeliveryProducts, ShiftingShiftProducts } from './Index.js'
+import { AcceptedRecycleRequets, BuyPage, CartProducts, CategoryProduct, DeliveryRequetsPage, DonateForm, DonatePage, DonationRequetsPage, EditProduct, MyProduct, ProductForm, RecycleAgencyLogin,  RecycleAgencySignup, RecycleForm, RecyclePage, RecycleRequets, SellPage, ShiftForm, ShiftingAgencyLogin, ShiftingAgencySignup, ShiftingRequetsPage, ShiftPage, WishList , ShiftingAgencyPage, ShiftingDonationProducts, ShiftingDeliveryProducts, ShiftingShiftProducts, OrphanagesPage } from './Index.js'
 import AllProducts from './pages/AllProducts.jsx'
 import Home from './pages/Home.jsx'
 import {ProductPage} from './Index.js'
@@ -62,6 +62,10 @@ const router = createBrowserRouter([
       {
         path:'/donate-form',
         element: <DonateForm />
+      },
+      {
+        path: '/agency',
+        element: <OrphanagesPage />
       },
       {
         path:'/recycle-page',
