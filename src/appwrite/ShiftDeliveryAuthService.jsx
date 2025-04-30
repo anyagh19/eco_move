@@ -38,7 +38,7 @@ export class ShiftDeliveryAuthService {
             return "/default-image.png"; // Provide a placeholder image
         }
         console.log('Fetching preview for fileID:', fileID); // Log the file ID
-        return this.storage.getFilePreview(
+        return this.storage.getFileView(
             conf.appwriteBucketID,
             fileID
         );

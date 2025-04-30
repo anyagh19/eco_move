@@ -124,7 +124,7 @@ export class RecycleAuthService {
             return "/default-image.png"; // Provide a placeholder image
         }
         console.log('Fetching preview for fileID:', fileID); // Log the file ID
-        return this.bucket.getFilePreview(
+        return this.bucket.getFileView(
             conf.appwriteBucketID,
             fileID
         );

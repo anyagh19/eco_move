@@ -334,31 +334,26 @@ export class ProductService {
         }
     }
 
-    async addToOrders(userID, productID, title, productImage, price , products ,createdAt){
-        try {
-            return await this.databases.createDocument(
-                conf.appwriteDatabaseID,
-                conf.appwriteOrdersCollectionID,
-                ID.unique(),
-                {
-                    userID,
-                    productID,
-                    title,
-                    productImage,
-                    price,
-                    createdAt
-                },
-                [
-                    Permission.read(Role.user(userID)),
-                    Permission.update(Role.user(userID)),
-                    Permission.delete(Role.user(userID))
-                ]
-            )
-        } catch (error) {
-            console.log('add order', error)
-            throw error
-        }
-    }
+    async addToOrders(userID, productID, title, productImage, price) {
+        return await this.databases.createDocument(
+          conf.appwriteDatabaseID,
+          conf.appwriteOrdersCollectionID,
+          ID.unique(),
+          {
+            userID,
+            productID,
+            title,
+            productImage,
+            price,
+            
+          },// Appwrite now expects permissions in the data object
+            [
+                Permission.read(Role.user(userID)),
+                Permission.write(Role.user(userID)),
+              ]
+          
+        );
+      };
 
     async deleteOrder(orderID){
         try {
@@ -490,6 +485,36 @@ export class ProductService {
                 this.databases.deleteDocument(conf.appwriteDatabaseID, conf.appwriteCartCollectionID, item.$id)
             ));
 
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async addRating({ratingID = ID.unique(), productID , rate , review}){
+        try {
+            return await this.databases.createDocument(
+                conf.appwriteDatabaseID,
+                conf.appwriteRatingCollectionID,
+                ratingID,
+                {
+                    ratingID,
+                    productID,
+                    rate,
+                    review
+                }
+            )
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    async getRating(productID){
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteRatingCollectionID,
+                [Query.equal("productID", productID)]
+            )
         } catch (error) {
             console.log(error)
         }

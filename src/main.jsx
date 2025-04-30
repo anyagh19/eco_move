@@ -13,6 +13,8 @@ import { AcceptedRecycleRequets, BuyPage, CartProducts, CategoryProduct, Deliver
 import AllProducts from './pages/AllProducts.jsx'
 import Home from './pages/Home.jsx'
 import {ProductPage} from './Index.js'
+import PaymentPage from './pages/Payment/PaymentPage.jsx'
+import PaymentSummary from './pages/Payment/PaymentSummary.jsx'
 
 const router = createBrowserRouter([
   {
@@ -119,6 +121,14 @@ const router = createBrowserRouter([
       {
         path:'/shifting-requets',
         element: <ShiftingRequetsPage />
+      },
+      {
+        path: '/payment',
+        element: <PaymentPage />
+      },
+      {
+        path: "/payment-success",
+        element: <PaymentSummary />
       },
       {
         path:'/shifting-agency-page',

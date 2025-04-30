@@ -16,6 +16,7 @@ const conf = {
     appwriteShiftingAgencyDonationProductsCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCYDONATIONPRODUCTS_COLLECTION_ID),
     appwriteShiftingAgencyDeliveryProductsCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCYDELIVERYPRODUCTS_COLLECTION_ID),
     appwriteShiftingAgencyShiftProductsCollectionID: String(import.meta.env.VITE_APPWRITE_SHIFTINGAGENCYSHIFTPRODUCTS_COLLECTION_ID),
+    appwriteRatingCollectionID: String(import.meta.env.VITE_APPWRITE_RATING_COLLECTION_ID),
     appwriteBucketID: String(import.meta.env.VITE_APPWRITE_BUCKET_ID)
 }
 
