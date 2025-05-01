@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ProductForm({ product }) {
-    const { register, handleSubmit, control, setValue, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         defaultValues: {
             title: product?.title || '',
             description: product?.description || '',
@@ -96,21 +96,27 @@ function ProductForm({ product }) {
                     type="text"
                     placeholder="Enter title"
                     className="w-full border-gray-300 rounded-lg shadow-sm p-3"
-                    {...register("title", { required: true })}
+                    {...register("title", { required: "Title is required" })}
                 />
+                {errors.title && <span className="text-red-500 text-sm">{errors.title.message}</span>}
+
                 <Select
                     label="Category"
                     options={["furniture", "electronics", "others"]}
                     className="w-full border-gray-300 rounded-lg shadow-sm p-3"
-                    {...register("category", { required: true })}
+                    {...register("category", { required: "Category is required" })}
                 />
+                {errors.category && <span className="text-red-500 text-sm">{errors.category.message}</span>}
+
                 <RTE
                     label="Description"
                     name="description"
                     className="border-gray-300 rounded-lg shadow-sm p-3"
                     control={control}
                     defaultValue={getValues("description")}
+                    rules={{ required: "Description is required" }}
                 />
+                {errors.description && <span className="text-red-500 text-sm">{errors.description.message}</span>}
             </div>
 
             <div className="w-full md:w-1/2 flex flex-col gap-6">
@@ -132,26 +138,36 @@ function ProductForm({ product }) {
                 ) : (
                     <p className="text-gray-500">No preview available</p>
                 )}
+
                 <Input
                     label="Price"
                     type="number"
                     placeholder="Enter price"
                     className="border-gray-300 rounded-lg shadow-sm p-3"
-                    {...register("price", { required: true })}
+                    {...register("price", {
+                        required: "Price is required",
+                        validate: value => value > 0 || "Price must be greater than 0"
+                    })}
                 />
+                {errors.price && <span className="text-red-500 text-sm">{errors.price.message}</span>}
+
                 <Input
                     label="Address"
                     type="text"
                     placeholder="Enter address (House No, Street, City, State, Pincode)"
                     className="border-gray-300 rounded-lg shadow-sm p-3 h-[150px]"
-                    {...register("address", { required: true })}
+                    {...register("address", { required: "Address is required" })}
                 />
+                {errors.address && <span className="text-red-500 text-sm">{errors.address.message}</span>}
+
                 <Select
                     label="Status"
                     options={["Active", "Inactive"]}
                     className="w-full border-gray-300 rounded-lg shadow-sm p-3"
-                    {...register("status", { required: true })}
+                    {...register("status", { required: "Status is required" })}
                 />
+                {errors.status && <span className="text-red-500 text-sm">{errors.status.message}</span>}
+
                 <Button type="submit" disabled={isSubmitting} className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-blue-700 transition">
                     {isSubmitting ? "Processing..." : product ? "Update Product" : "Submit Product"}
                 </Button>

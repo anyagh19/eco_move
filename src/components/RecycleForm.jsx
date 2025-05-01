@@ -7,7 +7,7 @@ import { toast } from 'react-toastify'
 import productService from '../appwrite/Product'
 
 function RecycleForm({ product }) {
-    const { register, handleSubmit, setValue } = useForm({
+    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
         defaultValues: {
             title: '',
             category: '',
@@ -84,22 +84,32 @@ function RecycleForm({ product }) {
                     type='text'
                     placeholder='Enter title'
                     className='w-full border-gray-300 rounded-lg shadow-sm p-3'
-                    {...register('title', { required: true })}
+                    {...register('title', { required: "Title is required" })}
                 />
+                {errors.title && <span className="text-red-500 text-sm">{errors.title.message}</span>}
+
                 <Select
                     label='Category'
                     options={['paper', 'cardboard', 'metal', 'other']}
                     className='w-full border-gray-300 rounded-lg shadow-sm p-3'
-                    {...register('category', { required: true })}
+                    {...register('category', { required: "Category is required" })}
                 />
+                {errors.category && <span className="text-red-500 text-sm">{errors.category.message}</span>}
+
                 <Input
                     label='Weight (kg)'
                     type='number'
                     placeholder='Enter weight'
                     className='w-full border-gray-300 rounded-lg shadow-sm p-3'
-                    {...register('weight', { required: true })}
+                    {...register('weight', {
+                        required: "Weight is required",
+                        valueAsNumber: true,
+                        min: { value: 1, message: "Weight must be greater than 0" }
+                    })}
                 />
+                {errors.weight && <span className="text-red-500 text-sm">{errors.weight.message}</span>}
             </div>
+
             <div className='w-full md:w-1/2 flex flex-col gap-6'>
                 <Input
                     label="Product Image:"
@@ -119,13 +129,16 @@ function RecycleForm({ product }) {
                 ) : (
                     <p className="text-gray-500">No preview available</p>
                 )}
+
                 <Input
                     label='Pickup Address'
                     type='text'
                     placeholder='Enter full address (House No, Building, Street, City, State, Pincode)'
                     className='border-gray-300 rounded-lg shadow-sm p-3 h-[150px]'
-                    {...register('pickupAddress', { required: true })}
+                    {...register('pickupAddress', { required: "Pickup address is required" })}
                 />
+                {errors.pickupAddress && <span className="text-red-500 text-sm">{errors.pickupAddress.message}</span>}
+
                 <Button type="submit" disabled={isSubmitting} className="w-full bg-green-600 text-white font-semibold py-3 rounded-lg shadow-md hover:bg-green-700 transition">
                     {isSubmitting ? "Recycling..." : "Recycle Now"}
                 </Button>

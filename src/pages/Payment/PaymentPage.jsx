@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import productService from '../../appwrite/Product'; // make sure this path is correct
+import productService from '../../appwrite/Product'; 
 import authService from '../../appwrite/Auth';
 
 function PaymentPage() {
@@ -30,7 +30,7 @@ function PaymentPage() {
 
     try {
       if (state?.fromCart) {
-        // Save multiple orders
+       
         const userData = await authService.getCurrentUser()
         const userID = userData.$id
         await Promise.all(

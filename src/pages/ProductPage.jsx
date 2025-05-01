@@ -167,12 +167,12 @@ function ProductPage() {
 
         {/* Review Toggle */}
         <div className="mt-4">
-          <Button 
+          <button 
             onClick={() => setShowForm(!showForm)} 
             className="bg-green-400 hover:bg-green-300 text-white py-2 px-5 rounded-xl transition shadow"
           >
             {showForm ? "Cancel" : "Write a Review"}
-          </Button>
+          </button>
         </div>
 
         {/* Review Form */}
