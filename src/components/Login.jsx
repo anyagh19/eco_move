@@ -12,15 +12,18 @@ function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
-  
+
   const loginUser = async (data) => {
     setError('');
     try {
       const session = await authService.login(data);
       if (session) {
         const userData = await authService.getCurrentUser();
+
         if (userData) {
-          dispatch(storelogin({ userData, role: 'user' }));
+          // Extract role from preferences or fallback to 'user'
+          const role = userData.prefs?.role || 'user';
+          dispatch(storelogin({ userData, role }));
           toast.success('🎉 Login successful', { position: 'top-center' });
           navigate('/');
         }

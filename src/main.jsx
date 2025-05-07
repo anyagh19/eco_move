@@ -15,16 +15,13 @@ import Home from './pages/Home.jsx'
 import {ProductPage} from './Index.js'
 import PaymentPage from './pages/Payment/PaymentPage.jsx'
 import PaymentSummary from './pages/Payment/PaymentSummary.jsx'
+import AdminPage from './pages/AdminPage.jsx'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
     children: [
-      // {
-      //   path: '/',
-      //   element: <AllProducts />
-      // },
       {
         path:'/',
         element: <Home />
@@ -88,6 +85,10 @@ const router = createBrowserRouter([
       {
         path:'/recycle-signup',
         element: <RecycleAgencySignup />
+      },
+      {
+        path: '/admin',
+        element: <AdminPage />
       },
       {
         path:'/recycle-login',

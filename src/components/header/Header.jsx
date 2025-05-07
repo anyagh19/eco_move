@@ -18,6 +18,7 @@ function Header() {
   const navItems = [
     { id: ID.unique(), name: 'Home', url: '/', active: true },
     { id: ID.unique(), name: 'Shift', url: '/shift-page', active: role === 'user' },
+    { id: ID.unique(), name: 'Admin', url: '/admin', active: role === 'admin' },
     { id: ID.unique(), name: 'Sell', url: '/sell-page', active: role === 'user' },
     { id: ID.unique(), name: 'Recycle', url: '/recycle-page', active: role === 'user' },
     { id: ID.unique(), name: 'Donate', url: '/donate-page', active: role === 'user' },

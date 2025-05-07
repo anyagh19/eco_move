@@ -1,9 +1,10 @@
-import { Client, Account, ID } from 'appwrite'
+import { Client, Account, ID , } from 'appwrite'
 import conf from '../conf/Conf'
 
 export class AuthService {
     client = new Client();
     account;
+
 
     constructor() {
         this.client
@@ -11,8 +12,19 @@ export class AuthService {
             .setProject(conf.appwriteProjectID);
 
         this.account = new Account(this.client)
+       
     }
 
+    async listAllUsers() {
+        try {
+            const response = await this.users.list();
+            // Filter only users with role 'user' in their preferences
+            return response.users.filter((user) => user.prefs.role === "user");
+        } catch (error) {
+            console.error("Error listing users:", error);
+            return [];
+        }
+    }
     async createAccount({ email, password, name, phoneNumber }) {
         try {
             const userAcount = await this.account.create(ID.unique(), email, password, name);

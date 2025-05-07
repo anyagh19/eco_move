@@ -519,6 +519,17 @@ export class ProductService {
             console.log(error)
         }
     }
+
+    async listAllOrders(){
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteOrdersCollectionID
+            )
+        } catch (error) {
+            console.log(error)
+        }
+    }
 };
 
 

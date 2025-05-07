@@ -342,6 +342,17 @@ export class ShiftAuthService {
             console.log(error)
         }
     }
+
+    async listShiftingAgency(){
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteShiftingAgencyCollectionID
+            )
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 const shiftAuthService = new ShiftAuthService();

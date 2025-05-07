@@ -186,6 +186,17 @@ export class RecycleAuthService {
             throw error;
         }
     }
+
+    async listRecycleAgency(){
+        try {
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteRecycleAgencyCollectionID
+            )
+        } catch (error) {
+            console.log(error)
+        }
+    }
 }
 
 const recycleAuthService = new RecycleAuthService();
