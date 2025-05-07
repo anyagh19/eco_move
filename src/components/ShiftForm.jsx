@@ -104,12 +104,22 @@ function ShiftForm({ product }) {
         <Input
           label='Phone'
           type='text'
-          placeholder='Enter Phone'
+          placeholder='Enter 10-digit Phone Number'
           className='w-full border-gray-300 rounded-lg shadow-sm p-3'
           {...register('userPhone', {
             required: 'Phone number is required',
-            validate: value =>
-              /^[0-9]+$/.test(value) || 'Phone should only contain numbers'
+            minLength: {
+              value: 10,
+              message: 'Phone number must be exactly 10 digits'
+            },
+            maxLength: {
+              value: 10,
+              message: 'Phone number must be exactly 10 digits'
+            },
+            pattern: {
+              value: /^[0-9]+$/,
+              message: 'Phone number must contain only numbers'
+            }
           })}
         />
         {errors.userPhone && <span className='text-red-500 text-sm'>{errors.userPhone.message}</span>}
