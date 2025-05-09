@@ -162,7 +162,7 @@ function ProductForm({ product }) {
 
                 <Select
                     label="Status"
-                    options={["Active", "Inactive"]}
+                    options={["active", "unactive"]}
                     className="w-full border-gray-300 rounded-lg shadow-sm p-3"
                     {...register("status", { required: "Status is required" })}
                 />

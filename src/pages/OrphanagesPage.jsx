@@ -1,13 +1,11 @@
-// src/components/OrphanagesPage.jsx
 
 import React, { useState } from 'react';
 import { orphanages } from '../data/Orphanages';
 import OrphanageCard from '../components/OrphanageCard';
-import OrphanageModal from '../components/OrphanageModel'; // This should exist or be stubbed
-
+import OrphanageModal from '../components/OrphanageModel'; 
 const OrphanagesPage = () => {
   const [selectedOrphanage, setSelectedOrphanage] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+ const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleViewDetails = (orphanage) => {
     setSelectedOrphanage(orphanage);
