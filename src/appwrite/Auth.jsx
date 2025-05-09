@@ -1,8 +1,9 @@
-import { Client, Account, ID , } from 'appwrite'
+import { Client, Account, ID , Databases } from 'appwrite'
 import conf from '../conf/Conf'
 
 export class AuthService {
     client = new Client();
+    databases
     account;
 
 
@@ -12,28 +13,42 @@ export class AuthService {
             .setProject(conf.appwriteProjectID);
 
         this.account = new Account(this.client)
-       
+       this.databases = new Databases(this.client)
     }
 
     async listAllUsers() {
         try {
-            const response = await this.users.list();
-            // Filter only users with role 'user' in their preferences
-            return response.users.filter((user) => user.prefs.role === "user");
+            return await this.databases.listDocuments(
+                conf.appwriteDatabaseID,
+                conf.appwriteUsersCollectionID
+            )
         } catch (error) {
             console.error("Error listing users:", error);
             return [];
         }
     }
-    async createAccount({ email, password, name, phoneNumber }) {
+    async createAccount({ email, password, name, phone , userID= ID.unique() }) {
         try {
             const userAcount = await this.account.create(ID.unique(), email, password, name);
             if (userAcount) {
                 await this.login({ email, password })
                 await this.account.updatePrefs({
-                    phoneNumber: phoneNumber,
+                    phone: phone,
                 });
-                return userAcount;
+                const document = await this.databases.createDocument(
+                    conf.appwriteDatabaseID,
+                    conf.appwriteUsersCollectionID,
+                    ID.unique(),
+                    {
+                        email,
+                        name,
+                        phone,
+                        password,
+                        userID,
+                    }
+                );
+
+                return { userAcount, document };
             }
             else {
                 return userAcount;

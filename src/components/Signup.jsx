@@ -16,10 +16,17 @@ function Signup() {
   const create = async (data) => {
     setError('');
     try {
-      const userData = await authService.createAccount(data);
+      // Create account including userID
+      const userData = await authService.createAccount({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phone: data.phoneNumber,
+        
+      });
+      
       if (userData) {
-        const currentUserData = await authService.getCurrentUser(userData);
-
+        const currentUserData = await authService.getCurrentUser();
         dispatch(login({ userData: currentUserData, role: data.role || 'user' }));
         toast.success('🎉 Signup successful!', { position: 'top-center' });
         navigate('/');
@@ -70,7 +77,7 @@ function Signup() {
             className="py-3 px-4 bg-gray-100 border border-gray-300 rounded-md focus:ring-[#007b55]"
             {...register('role', { required: true })}
           />
-
+          
           <Link to="/login" className="text-lg font-medium text-[#007b55] hover:underline text-center">
             Already have an account?
           </Link>

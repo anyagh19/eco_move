@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import productService from '../appwrite/Product';
 import shiftAuthService from '../appwrite/ShiftAuthService';
 import recycleAuthService from '../appwrite/RecycleAuth';
+import authService from '../appwrite/Auth';
 
 function AdminPage() {
     const [section, setSection] = useState('orders');
@@ -20,7 +21,7 @@ function AdminPage() {
             } else if (section === 'recycle') {
                 response = await recycleAuthService.listRecycleAgency();
             } else if (section === 'users') {
-                response = await productService.listPhoneData();
+                response = await authService.listAllUsers();
             }
 
             if (response && response.documents.length > 0) {
@@ -47,7 +48,7 @@ function AdminPage() {
                 <button onClick={() => setSection('orders')} className="hover:text-yellow-400">Orders</button>
                 <button onClick={() => setSection('shifting')} className="hover:text-yellow-400">Shift Agencies</button>
                 <button onClick={() => setSection('recycle')} className="hover:text-yellow-400">Recycle Agencies</button>
-                <button onClick={() => setSection('phone')} className="hover:text-yellow-400">Phone</button>
+                <button onClick={() => setSection('users')} className="hover:text-yellow-400">Users</button>
             </div>
 
             {/* Table */}
