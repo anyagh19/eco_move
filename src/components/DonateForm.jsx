@@ -8,6 +8,7 @@ import { RTE, Button } from "../Index";
 import { orphanages } from "../data/orphanages";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import authService from "../appwrite/Auth";
 
 function DonateForm() {
     const { register, handleSubmit, control, setValue, reset } = useForm();
@@ -32,38 +33,49 @@ function DonateForm() {
     }, [location.state, setValue]);
 
     const submit = async (data) => {
-        if (isSubmitting) return;
-        setIsSubmitting(true);
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
-        try {
-            let fileID = null;
-            if (file) {
-                const uploadedFile = await productService.uploadProductFile(file);
-                fileID = uploadedFile.$id;
-            }
-
-            const dbProduct = await productService.addToDonate(
-                data.title,
-                data.category,
-                data.description,
-                fileID,
-                data.pickupAddress,
-                data.agencyType,
-                data.selectedAgency
-            );
-
-            if (dbProduct) {
-                toast.success("🎉 Thanks for your donation!", { position: "top-center" });
-                navigate(`/donate-page`);
-                reset();
-            }
-        } catch (error) {
-            console.error("Donation error:", error);
-            toast.error("Failed to donate. Try again.");
-        } finally {
+    try {
+        const userData = await authService.getCurrentUser();
+        if (!userData) {
+            toast.error("Please log in to donate.");
             setIsSubmitting(false);
+            return;
         }
-    };
+
+        const userID = userData.$id;
+        let fileID = null;
+        
+        if (file) {
+            const uploadedFile = await productService.uploadProductFile(file, userID); // Pass userID
+            fileID = uploadedFile.$id;
+        }
+
+        const dbProduct = await productService.addToDonate(
+            userID,
+            data.title,
+            data.category,
+            data.description,
+            fileID,
+            data.pickupAddress,
+            data.agencyType,
+            data.selectedAgency
+        );
+
+        if (dbProduct) {
+            toast.success("🎉 Thanks for your donation!", { position: "top-center" });
+            navigate(`/donate-page`);
+            reset();
+        }
+    } catch (error) {
+        console.error("Donation error:", error);
+        toast.error("Failed to donate. Try again.");
+    } finally {
+        setIsSubmitting(false);
+    }
+};
+
 
     return (
         <form onSubmit={handleSubmit(submit)} className="max-w-full mx-auto bg-white rounded-xl shadow-lg space-y-6 px-3">

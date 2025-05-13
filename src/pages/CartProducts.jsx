@@ -2,21 +2,43 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import productService from '../appwrite/Product';
+import authService from '../appwrite/Auth';
 import { Container, ProductCard } from '../Index';
 import { toast } from 'react-toastify';
+
+const RAZORPAY_KEY_ID = 'rzp_test_kxwK4KltT9lbKS';
 
 function CartProducts() {
     const [products, setProducts] = useState([]);
     const userData = useSelector((state) => state.auth.userData);
+    const [address, setAddress] = useState({});
+    const [villages, setVillages] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchCartProducts = async () => {
             try {
-                const response = await productService.getCartProducts(userData?.$id);
+                const user = await authService.getCurrentUser();
+                const userID = user?.$id;
+
+                if (!userID) {
+                    throw new Error("User not logged in");
+                }
+
+                // Fetch cart products
+                const response = await productService.getCartProducts(userID);
                 setProducts(response?.documents || []);
+
+                // Fetch user address
+                const userAddress = JSON.parse(user?.prefs?.address || '{}');
+                setAddress(userAddress);
             } catch (error) {
                 console.error('Error fetching cart products:', error);
+                toast.error('Error fetching cart products. Please try again.');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -27,13 +49,12 @@ function CartProducts() {
 
     const removeFromCart = async (cartID) => {
         try {
-            const response = await productService.removeCartProduct(cartID);
-            if (response) {
-                setProducts((prev) => prev.filter((product) => product.$id !== cartID));
-                toast.info('Removed from cart', { position: 'top-center' });
-            }
+            await productService.removeCartProduct(cartID);
+            setProducts((prev) => prev.filter((product) => product.$id !== cartID));
+            toast.info('Removed from cart', { position: 'top-center' });
         } catch (error) {
             console.error('Error removing from cart:', error);
+            toast.error('Failed to remove product. Please try again.');
         }
     };
 
@@ -41,20 +62,87 @@ function CartProducts() {
         return products.reduce((total, item) => total + parseFloat(item.price), 0).toFixed(2);
     };
 
-    const handleProceedToPayment = () => {
-        navigate('/payment', {
-            state: {
-                fromCart: true,
-                products,
-                totalAmount: calculateTotal()
-            }
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement('script');
+            script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
         });
+    };
+
+    const handlePaymentSuccess = async () => {
+    try {
+        const user = await authService.getCurrentUser();
+        const userID = user?.$id;
+
+        if (!userID || userID.length > 36 || /[^a-zA-Z0-9._-]/.test(userID)) {
+            throw new Error("Invalid user ID for permissions");
+        }
+
+        await Promise.all(
+            products.map((item) =>
+                productService.addToOrders(
+                    userID,               // userID
+                    item.$id,             // productID
+                    item.title,           // title
+                    item.productImage,    // productImage
+                    item.price            // price
+                )
+            )
+        );
+        
+        await productService.removeAllFromCart(userID);
+        setProducts([]);
+        toast.success('🎉 Payment Successful!', { position: 'top-center' });
+    } catch (error) {
+        console.error('Payment processing error', error);
+        toast.error('Payment Failed. Try again!');
+    }
+};
+
+
+    const handleProceedToPayment = async () => {
+        const isScriptLoaded = await loadRazorpayScript();
+
+        if (!isScriptLoaded) {
+            toast.error("Razorpay SDK failed to load. Are you online?");
+            return;
+        }
+
+        const totalAmount = calculateTotal() * 100; // Convert to paise
+
+        const options = {
+            key: RAZORPAY_KEY_ID,
+            amount: totalAmount,
+            currency: 'INR',
+            name: 'FarmFresh',
+            description: 'Payment for your farm products',
+            image: '/logo.png',
+            handler: handlePaymentSuccess,
+            prefill: {
+                name: userData?.name,
+                email: userData?.email,
+            },
+            notes: {
+                address: JSON.stringify(address),
+            },
+            theme: {
+                color: '#3399cc',
+            },
+        };
+
+        const rzp = new window.Razorpay(options);
+        rzp.open();
     };
 
     return (
         <div className="w-full bg-gray-50 min-h-screen">
             <Container>
-                {products.length === 0 ? (
+                {loading ? (
+                    <h3 className="text-center text-gray-600 text-lg">Loading cart products...</h3>
+                ) : products.length === 0 ? (
                     <h3 className="text-center text-gray-600 text-lg">No products added to cart.</h3>
                 ) : (
                     <div className="flex flex-wrap gap-6">

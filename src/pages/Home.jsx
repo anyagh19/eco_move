@@ -5,30 +5,30 @@ const services = [
   {
     title: "Buy Products",
     description: "Explore affordable, high-quality second-hand items ready to use.",
-    image: "https://cdn-icons-png.flaticon.com/512/10704/10704890.png",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB_LmWw4PkbPC-IdMN2BEPSnY3X3yMMFjZr0IpmJWL3nJLoOyK8BxalrvoY-GUCD84utY&usqp=CAU",
     discount: 20,
   },
   {
     title: "Sell Products",
     description: "Easily list your old furniture and household items to sell.",
-    image: "https://cdn-icons-png.flaticon.com/512/10541/10541251.png",
+    image: "https://img.freepik.com/free-vector/hand-drawn-flea-market-concept_23-2148814804.jpg?semt=ais_hybrid&w=740",
     discount: 30,
   },
   {
     title: "Recycle Items",
     description: "Help the environment by recycling electronics, appliances, and more.",
-    image: "https://cdn-icons-png.flaticon.com/512/2933/2933825.png",
+    image: "https://c8.alamy.com/comp/2CRWR7D/recycling-web-banner-garbage-sorting-zero-waste-lifestyle-eco-friendly-infographics-with-linear-icons-on-green-background-isolated-outline-color-2CRWR7D.jpg",
   },
   {
     title: "Shifting Services",
     description: "Book expert movers to shift your belongings safely and on time.",
-    image: "https://cdn-icons-png.flaticon.com/512/10414/10414229.png",
+    image: "https://static.vecteezy.com/system/resources/thumbnails/000/150/491/small/free-movers-line-icon-vector.jpg",
     discount: 25,
   },
   {
     title: "Donate Goods",
     description: "Contribute your old items to NGOs and those in need with ease.",
-    image: "https://cdn-icons-png.flaticon.com/512/10407/10407320.png",
+    image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQqa1I2l4Q9E0Mz0vC1R5LNP7SAnuBhzDnqGmswf2dhpa2reo7p_NJfKyDOQwEXfCzFoeQ&usqp=CAU",
     discount: 15,
   },
 ];

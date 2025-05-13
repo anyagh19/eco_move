@@ -403,9 +403,9 @@ export class ProductService {
                 },
                 [
                     Permission.read(Role.any()), // Anyone can read
-                    Permission.update(`user:${userID}`), // Fix: Correctly format user role
-                    Permission.delete(`user:${userID}`), 
-                    Permission.write(`user:${userID}`)
+                    Permission.update(Role.any()), // Fix: Correctly format user role
+                    Permission.delete(Role.any()), 
+                    Permission.write(Role.any())
                 ]
             )
         } catch (error) {
