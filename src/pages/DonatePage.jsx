@@ -27,9 +27,9 @@ function DonatePage() {
   const words2 = heading2.split(' ');
 
   return (
-    <div className='h-[500px] bg-top bg-contain  bg-no-repeat bg-gradient-to-r from-blue-500 via-green-500 to-blue-700'
+    <div className='min-h-screen bg-top bg-contain  bg-no-repeat bg-gradient-to-r from-blue-500 via-green-500 to-blue-700'
       style={{
-        backgroundImage: 'url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTPfdnvPOAIW86HI_-GfdS9mcNleoPI_nikezOeh2L0b1nLmEULIpU8etMQJyYPro4c-Sg&usqp=CAU")',
+        backgroundImage: 'url("https://static.vecteezy.com/system/resources/thumbnails/001/875/313/small_2x/social-support-activities-free-vector.jpg")',
         backgroundBlendMode: 'overlay',
       }}
     >
@@ -50,8 +50,8 @@ function DonatePage() {
       </motion.div>
 
       {/* Centered Button Section */}
-      <motion.div 
-        className='flex flex-col items-center justify-center gap-12 py-24 px-6 text-center'
+      <motion.div
+        className='flex flex-col items-center justify-center gap-12 py-24 px-6 text-center mt-10'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1 }}
@@ -68,6 +68,7 @@ function DonatePage() {
           </Link>
         </motion.div>
       </motion.div>
+
     </div>
   );
 }

@@ -26,9 +26,16 @@ function SellPage() {
   return (
     <div className='min-h-screen bg-gradient-to-r from-blue-500 via-green-500 to-blue-700 bg-center bg-cover bg-no-repeat'
       style={{
-        backgroundImage: 'url("https://th.bing.com/th?id=OIP.CcVUs8msgsGkUKQPmxkc6AHaHa&w=250&h=250&c=8&rs=1&qlt=90&o=6&dpr=1.5&pid=3.1&rm=2")',
+        backgroundImage: 'url("https://img.freepik.com/free-vector/people-buying-clothes-online-shop_1262-19293.jpg?semt=ais_hybrid&w=740")',
         backgroundBlendMode: 'overlay',
+        backgroundSize: 'contain',  // or 'cover' based on your need
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        height: '80vh',  // Set the height
+        width: '100%',   // Set the width 
       }}
+
+
     >
       {/* Top Header Section */}
       <motion.div
@@ -47,7 +54,7 @@ function SellPage() {
       </motion.div>
 
       {/* Centered Button Section */}
-      <motion.div 
+      <motion.div
         className='flex flex-col items-center justify-center gap-12 py-24 px-6 text-center'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

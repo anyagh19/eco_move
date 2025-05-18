@@ -117,7 +117,7 @@ function CartProducts() {
             key: RAZORPAY_KEY_ID,
             amount: totalAmount,
             currency: 'INR',
-            name: 'FarmFresh',
+            name: 'EcoMove',
             description: 'Payment for your farm products',
             image: '/logo.png',
             handler: handlePaymentSuccess,
