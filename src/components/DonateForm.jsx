@@ -5,7 +5,7 @@ import productService from "../appwrite/Product";
 import Input from "./Input";
 import Select from "./Select";
 import { RTE, Button } from "../Index";
-import { orphanages } from "../data/orphanages";
+import { orphanages } from "../data/Orphanages";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import authService from "../appwrite/Auth";
